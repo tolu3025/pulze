@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "273748081036",
+    "project_id": "pulze-student-app",
+    "storage_bucket": "pulze-student-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:273748081036:android:e7fb63bafb28c5dbbbbea9",
+        "android_client_info": {
+          "package_name": "com.pulze.pulze"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPWgBY32UnR__yT_WGsSF-f3T4PJEwda0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
