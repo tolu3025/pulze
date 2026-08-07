@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'screens/expenses_screen.dart';
+import 'screens/study_timer_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
@@ -44,20 +46,74 @@ class PulzeApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const PulzeHomePage(),
+      home: const PulzeMainShell(),
     );
   }
 }
 
-class PulzeHomePage extends StatefulWidget {
-  const PulzeHomePage({super.key});
+class PulzeMainShell extends StatefulWidget {
+  const PulzeMainShell({super.key});
 
   @override
-  State<PulzeHomePage> createState() => _PulzeHomePageState();
+  State<PulzeMainShell> createState() => _PulzeMainShellState();
 }
 
-class _PulzeHomePageState extends State<PulzeHomePage> {
+class _PulzeMainShellState extends State<PulzeMainShell> {
   int _selectedIndex = 0;
+
+  final List<Widget> _screens = const [
+    PulzeDashboardHome(),
+    ExpensesScreen(),
+    StudyTimerScreen(),
+    PulzeProfileView(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _screens,
+      ),
+      bottomNavigationBar: NavigationBar(
+        backgroundColor: const Color(0xFF1E293B),
+        indicatorColor: const Color(0xFF6366F1).withOpacity(0.3),
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home_rounded, color: Color(0xFF818CF8)),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.account_balance_wallet_outlined),
+            selectedIcon: Icon(Icons.account_balance_wallet_rounded, color: Color(0xFF818CF8)),
+            label: 'Expenses',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.timer_outlined),
+            selectedIcon: Icon(Icons.timer_rounded, color: Color(0xFF818CF8)),
+            label: 'Study Timer',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline_rounded),
+            selectedIcon: Icon(Icons.person_rounded, color: Color(0xFF818CF8)),
+            label: 'Profile',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Dashboard Home Tab (Signout Icon REMOVED from AppBar)
+class PulzeDashboardHome extends StatelessWidget {
+  const PulzeDashboardHome({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +135,7 @@ class _PulzeHomePageState extends State<PulzeHomePage> {
               ),
             ),
             const SizedBox(width: 10),
-            const Text('Pulze'),
+            const Text('Pulze Dashboard'),
           ],
         ),
         actions: [
@@ -91,6 +147,7 @@ class _PulzeHomePageState extends State<PulzeHomePage> {
             icon: const Icon(Icons.settings_outlined),
             onPressed: () {},
           ),
+          // NOTE: Signout icon has been intentionally removed per user request.
         ],
       ),
       body: SingleChildScrollView(
@@ -130,15 +187,20 @@ class _PulzeHomePageState extends State<PulzeHomePage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Connected to Firebase Cloud Engine',
+                    'Connected to pulze-student-app Firebase',
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.white.withOpacity(0.85),
                     ),
                   ),
                   const SizedBox(height: 20),
-                  ElevatedButton(
+                  ElevatedButton.icon(
                     onPressed: () {},
+                    icon: const Icon(Icons.check_circle_rounded, size: 18),
+                    label: const Text(
+                      'Firebase Online',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: const Color(0xFF4F46E5),
@@ -150,19 +212,15 @@ class _PulzeHomePageState extends State<PulzeHomePage> {
                         vertical: 12,
                       ),
                     ),
-                    child: const Text(
-                      'Explore Dashboard',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
 
-            // Quick Stats Header
+            // Features Header
             const Text(
-              'Quick Actions & Status',
+              'Student Features & Tools',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -171,7 +229,7 @@ class _PulzeHomePageState extends State<PulzeHomePage> {
             ),
             const SizedBox(height: 16),
 
-            // Feature Grid
+            // Feature Cards Grid
             GridView.count(
               crossAxisCount: 2,
               crossAxisSpacing: 16,
@@ -180,59 +238,33 @@ class _PulzeHomePageState extends State<PulzeHomePage> {
               physics: const NeverScrollableScrollPhysics(),
               children: [
                 _buildFeatureCard(
-                  icon: Icons.local_fire_department_rounded,
-                  title: 'Firebase Auth',
-                  subtitle: 'User Sign-in & Tokens',
+                  icon: Icons.account_balance_wallet_rounded,
+                  title: 'Expense Tracker',
+                  subtitle: 'Monthly Sorted & Categorized',
+                  color: Colors.lightGreenAccent,
+                ),
+                _buildFeatureCard(
+                  icon: Icons.timer_rounded,
+                  title: 'Study Focus Timer',
+                  subtitle: 'Buzzing Sound Alerts',
                   color: Colors.orangeAccent,
                 ),
                 _buildFeatureCard(
                   icon: Icons.storage_rounded,
-                  title: 'Firestore DB',
-                  subtitle: 'Realtime Sync',
+                  title: 'Firestore Sync',
+                  subtitle: 'Realtime Student Cloud',
                   color: Colors.cyanAccent,
                 ),
                 _buildFeatureCard(
-                  icon: Icons.cloud_upload_rounded,
-                  title: 'Cloud Storage',
-                  subtitle: 'File Management',
-                  color: Colors.lightGreenAccent,
-                ),
-                _buildFeatureCard(
-                  icon: Icons.analytics_rounded,
-                  title: 'Analytics',
-                  subtitle: 'Usage Metrics',
+                  icon: Icons.security_rounded,
+                  title: 'Firebase Auth',
+                  subtitle: 'Active Student ID',
                   color: Colors.purpleAccent,
                 ),
               ],
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: NavigationBar(
-        backgroundColor: const Color(0xFF1E293B),
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.dashboard_outlined),
-            selectedIcon: Icon(Icons.dashboard_rounded),
-            label: 'Services',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline_rounded),
-            selectedIcon: Icon(Icons.person_rounded),
-            label: 'Profile',
-          ),
-        ],
       ),
     );
   }
@@ -280,6 +312,41 @@ class _PulzeHomePageState extends State<PulzeHomePage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class PulzeProfileView extends StatelessWidget {
+  const PulzeProfileView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Student Profile'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            CircleAvatar(
+              radius: 45,
+              backgroundColor: Color(0xFF6366F1),
+              child: Icon(Icons.person, size: 50, color: Colors.white),
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Pulze Student User',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'pulze-student-app@firebase.com',
+              style: TextStyle(fontSize: 14, color: Colors.white60),
+            ),
+          ],
+        ),
       ),
     );
   }
