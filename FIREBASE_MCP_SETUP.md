@@ -4,24 +4,20 @@ This guide provides instructions to complete your environment setup for Flutter,
 
 ---
 
-## 1. Installing Flutter SDK & Dart
+## 1. Flutter SDK & JDK 17 Status
 
-Since `flutter` and `dart` commands are not currently found in your Windows PATH:
+> [!NOTE]
+> **Status:** Flutter SDK and JDK 17 are **ALREADY INSTALLED** on your system!
+> - **Flutter SDK Location:** `C:\src\flutter` (Version `3.44.9`)
+> - **JDK 17 Location:** `C:\Program Files\Eclipse Adoptium\jdk-17.0.20.8-hotspot`
+> - **PATH & JAVA_HOME:** Automatically updated in your User Environment Variables.
 
-### Option A: Using Windows Package Manager (`winget`)
-Run the following command in PowerShell:
+If you open a new PowerShell terminal, test with:
 ```powershell
-winget install --id Flutter.Flutter -e
+flutter --version
+java -version
 ```
 
-### Option B: Manual Installation
-1. Download Flutter SDK zip from [flutter.dev](https://docs.flutter.dev/get-started/install/windows).
-2. Extract to `C:\src\flutter`.
-3. Add `C:\src\flutter\bin` to your System `PATH` environment variable.
-4. Verify installation:
-   ```powershell
-   flutter doctor
-   ```
 
 ---
 
