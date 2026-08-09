@@ -22,101 +22,92 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDF5E6), // Warm Parchment
+      backgroundColor: const Color(0xFFF9F8F6),
       body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            // Illustration Area
-            Expanded(
-              flex: 3,
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.only(top: 16),
-                child: Image.network(
-                  'https://lh3.googleusercontent.com/aida-public/AB6AXuDm9wVftLWVLmRHvIpDmyQdgNaqTXgw7ZNkK7HGE7E1BC9X2u_0XZ6oQQZJKGl7uOo3-lRjneGTCQLmtmNh7p0e_d3Kz494_QbFShCGlOct5E5vaUWZXy4Ss-e6LMsgfpFxjwDcAU7GYliiYcowVRQISQLUQcJZbe4ONSR4GhjoFDDUoJHbmPc3Lv-5CnoKa_tei7YCAmJXaowjDxugXJ5FBia5hppHIy5qiyYAlRUxVuqQC585m0k7la0PhLBW16GvCib9HPG35-GT',
-                  fit: BoxFit.cover,
-                  alignment: Alignment.topCenter,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Center(
-                      child: Icon(Icons.park_outlined, size: 100, color: Color(0xFF00BFA5)),
-                    );
-                  },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+          child: Column(
+            children: [
+              const Spacer(),
+              
+              // Pulze App Icon Box
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6B4EFF),
+                  borderRadius: BorderRadius.circular(28),
                 ),
-              ),
-            ),
-            // Content Area
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 40),
-              decoration: const BoxDecoration(
-                color: Color(0xFFFDF5E6),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0xFFFDF5E6),
-                    offset: Offset(0, -20),
-                    blurRadius: 20,
-                    spreadRadius: 20,
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Logo
-                  Image.asset(
-                    'assets/logo_text.png',
-                    height: 50,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Text(
-                        'P U L Z E',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              color: const Color(0xFF6B4EFF),
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 4,
-                            ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  // Tagline
-                  Text(
-                    'Your rhythm. Your growth. Your Pulze.',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: const Color(0xFF787587),
-                          fontWeight: FontWeight.w500,
-                        ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 40),
-                  // Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 54,
-                    child: ElevatedButton(
-                      onPressed: _finishOnboarding,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6B4EFF), // Deep Amethyst
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        shadowColor: const Color(0xFF6B4EFF).withOpacity(0.2),
-                      ),
-                      child: const Text(
-                        'Get Started',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
+                child: const Center(
+                  child: Text(
+                    'P',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 54,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      fontStyle: FontStyle.italic,
                     ),
                   ),
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // Pulze Text Logo
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Pulze',
+                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                          color: const Color(0xFF1C1A24),
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(width: 4),
+                  const Icon(Icons.auto_awesome, color: Color(0xFF00BFA5), size: 18),
                 ],
               ),
-            ),
-          ],
+              const SizedBox(height: 24),
+
+              // Tagline
+              const Text(
+                'Your rhythm. Your growth. Your Pulze.',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF787587),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              
+              const Spacer(),
+
+              // Get Started Button
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton(
+                  onPressed: _finishOnboarding,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6B4EFF),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: const Text(
+                    'Get Started',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

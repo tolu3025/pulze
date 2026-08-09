@@ -23,7 +23,6 @@ class DashboardScreen extends StatelessWidget {
         d.year == now.year && d.month == now.month && d.day == now.day)).length;
 
     // Study minutes calculation
-    final totalStudyMin = (study.totalStudyTime / 60).toStringAsFixed(1);
     final hours = study.totalStudyTime ~/ 3600;
     final minutes = (study.totalStudyTime % 3600) ~/ 60;
     final studyStr = study.totalStudyTime > 0 ? '${hours}h ${minutes}m' : '0h 26m';
@@ -35,10 +34,10 @@ class DashboardScreen extends StatelessWidget {
     }
     final streakStr = maxStreak > 0 ? '$maxStreak Days' : '1 Days';
 
-    // Total spent
+    // Total spent in NAIRA (₦)
     final totalSpent = expense.totalExpenses;
     final spentStr = totalSpent > 0 
-        ? (totalSpent >= 1000 ? '₦${(totalSpent/1000).toStringAsFixed(1)}K' : '₦${totalSpent.toStringAsFixed(0)}')
+        ? (totalSpent >= 1000 ? '₦${(totalSpent/1000).toStringAsFixed(0)}K' : '₦${totalSpent.toStringAsFixed(0)}')
         : '₦2K';
 
     // CGPA
@@ -65,38 +64,44 @@ class DashboardScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFCF8FF), // Light background
+      backgroundColor: const Color(0xFFF9F8F6),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFCF8FF),
+        backgroundColor: const Color(0xFFF9F8F6),
         elevation: 0,
+        leadingWidth: 100,
         leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFFE5E0EF), width: 1),
-            ),
-            child: const CircleAvatar(
-              backgroundImage: NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuDJTCYNIwjQp1Ayy5Iu_QPg58mn1ELlbD5qmto9VR2dW7TeZx_ILV6Ht-tuYDbgHGziyYwhqXvnUB8OfkgHB63Yuk8cz1hEn3fqW4jPRqiuQTaf6y52olTtKh35HTa1dUucXLH37_FTdmcqD1ky8P6lIRkSc5VI41hLSSl9UR_r6VwbdXr6HRt12U3cCb59FGNodTzK332hAVrdzdmviVpe6J14opRNav4moh2zbme46lMJELep4RCrHK5PrA5fw31xsepP4zNaueLX'),
-            ),
+          padding: const EdgeInsets.only(left: 20.0, top: 8.0, bottom: 8.0),
+          child: Row(
+            children: [
+              const CircleAvatar(
+                radius: 18,
+                backgroundColor: Color(0xFFEBE8E1),
+                child: Icon(Icons.person, color: Color(0xFF787587), size: 20),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Pulze',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: const Color(0xFF1C1A24),
+                    ),
+              ),
+            ],
           ),
-        ),
-        title: Image.network(
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuDlZ9mtsTYcAYYtR2IYEPglS5Ug12cbammBVKPnlzvsI3jJLVvtBygzfG7FqJ-_AiuK2Eh6DrqV4_0Sy9jbF6WIE7ArJu49fj2Bri5dhhPjSBO8IlWz5Z7COQzZ_UYPZvoZODTU9XnWgUMHduQTQ1Enu317bzlFWCBmKCmQ360ihNzQy0kI8UdxWpN0iFki01qCSXddKsu_7xSajFR6lwe7THfYljvQsF_U7zTmWA3I8FbkKmthA3lfiRLw_yfIq9fU_Ke87gIivycO',
-          height: 32,
-          errorBuilder: (context, error, stackTrace) {
-            return const Text('P U L Z E', style: TextStyle(fontWeight: FontWeight.bold));
-          },
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_none_rounded, color: Color(0xFF6B4EFF)),
-            onPressed: () {},
+            icon: const Icon(Icons.logout, color: Color(0xFF6B4EFF)),
+            onPressed: () {
+              auth.signOut();
+            },
           ),
+          const SizedBox(width: 12),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -105,6 +110,7 @@ class DashboardScreen extends StatelessWidget {
               '${getGreeting()}, $name',
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
+                    fontSize: 22,
                     color: const Color(0xFF1C1A24),
                   ),
             ),
@@ -112,20 +118,19 @@ class DashboardScreen extends StatelessWidget {
             const Text(
               "Let's build some momentum today.",
               style: TextStyle(
-                fontFamily: 'Inter',
                 fontSize: 14,
                 color: Color(0xFF787587),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
             // Daily Motivation Quote Block
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: const Color(0xFFF1ECFA), // surface-container
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE5E0EF)),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFEBE8E1)),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,7 +138,7 @@ class DashboardScreen extends StatelessWidget {
                   const Icon(
                     Icons.format_quote_rounded,
                     color: Color(0xFF6B4EFF),
-                    size: 24,
+                    size: 26,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -143,19 +148,19 @@ class DashboardScreen extends StatelessWidget {
                         const Text(
                           'DAILY MOTIVATION',
                           style: TextStyle(
-                            fontFamily: 'Inter',
                             fontSize: 11,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.bold,
                             letterSpacing: 0.8,
                             color: Color(0xFF6B4EFF),
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 6),
                         Text(
                           'Manage your pocket money wisely. A wealthy student is a disciplined student.',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 color: const Color(0xFF1C1A24),
                                 fontStyle: FontStyle.italic,
+                                fontSize: 13,
                               ),
                         ),
                       ],
@@ -164,7 +169,7 @@ class DashboardScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
             // Metrics Grid
             GridView.count(
@@ -181,7 +186,7 @@ class DashboardScreen extends StatelessWidget {
                   title: 'HABIT STREAK',
                   value: streakStr,
                   subtitle: '$todayHabitsCount/${habit.habits.length} Today',
-                  icon: Icons.check_circle_outline_rounded,
+                  icon: Icons.check_rounded,
                   color: const Color(0xFF6B4EFF),
                 ),
                 // Budget Expense card
@@ -200,7 +205,7 @@ class DashboardScreen extends StatelessWidget {
                   value: cgpaStr,
                   subtitle: 'Nigerian 5.0 Scale',
                   icon: Icons.school_outlined,
-                  color: const Color(0xFFE07A5F),
+                  color: const Color(0xFF6B4EFF),
                 ),
                 // Focus time logged
                 _buildMetricCard(
@@ -209,38 +214,39 @@ class DashboardScreen extends StatelessWidget {
                   value: studyStr,
                   subtitle: 'Total Logged',
                   icon: Icons.timer_outlined,
-                  color: const Color(0xFFEF4444),
+                  color: const Color(0xFF00BFA5),
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
             // Tip block at bottom
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFF1ECFA), // surface-container
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE5E0EF)),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFEBE8E1)),
               ),
               child: const Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.info_outline_rounded, color: Color(0xFF6B4EFF)),
+                  Icon(Icons.info_rounded, color: Color(0xFF6B4EFF), size: 22),
                   SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       'Tap the bottom tabs to log daily habits, track expenses, calculate CGPA, or start a Pomodoro session.',
                       style: TextStyle(
-                        fontFamily: 'Inter',
                         fontSize: 13,
                         color: Color(0xFF1C1A24),
+                        height: 1.3,
                       ),
                     ),
                   ),
                 ],
               ),
             ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -255,62 +261,56 @@ class DashboardScreen extends StatelessWidget {
     required IconData icon,
     required Color color,
   }) {
-    return Card(
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.12),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(icon, color: color, size: 20),
-                ),
-              ],
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFEBE8E1)),
+      ),
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.12),
+              shape: BoxShape.circle,
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  value,
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontFamily: 'Space Grotesk',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22,
-                        color: const Color(0xFF1C1A24),
-                      ),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22,
+                      color: const Color(0xFF1C1A24),
+                    ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 10,
+                  letterSpacing: 0.5,
+                  color: Color(0xFF1C1A24),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 11,
-                    letterSpacing: 0.5,
-                    color: Color(0xFF1C1A24),
-                  ),
+              ),
+              Text(
+                subtitle,
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: Color(0xFF787587),
                 ),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 10,
-                    color: Color(0xFF787587),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

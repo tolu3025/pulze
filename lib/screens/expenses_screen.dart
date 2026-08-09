@@ -15,7 +15,8 @@ class ExpensesScreen extends StatelessWidget {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF1E293B),
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       isScrollControlled: true,
       builder: (context) {
         return StatefulBuilder(
@@ -25,7 +26,7 @@ class ExpensesScreen extends StatelessWidget {
                 bottom: MediaQuery.of(context).viewInsets.bottom,
                 left: 20,
                 right: 20,
-                top: 20,
+                top: 24,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -33,32 +34,59 @@ class ExpensesScreen extends StatelessWidget {
                 children: [
                   const Text(
                     'Add Expense',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1C1A24)),
                   ),
                   const SizedBox(height: 16),
                   TextField(
                     controller: titleController,
-                    decoration: const InputDecoration(
+                    style: const TextStyle(color: Color(0xFF1C1A24)),
+                    decoration: InputDecoration(
                       labelText: 'Title / Description',
-                      border: OutlineInputBorder(),
+                      labelStyle: const TextStyle(color: Color(0xFF787587)),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xFFEBE8E1)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xFF6B4EFF), width: 2),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
                   TextField(
                     controller: amountController,
-                    decoration: const InputDecoration(
-                      labelText: 'Amount (\$)',
-                      border: OutlineInputBorder(),
+                    style: const TextStyle(color: Color(0xFF1C1A24)),
+                    decoration: InputDecoration(
+                      labelText: 'Amount (₦)',
+                      labelStyle: const TextStyle(color: Color(0xFF787587)),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xFFEBE8E1)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xFF6B4EFF), width: 2),
+                      ),
                     ),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
                     value: selectedCategory,
-                    dropdownColor: const Color(0xFF1E293B),
-                    decoration: const InputDecoration(
+                    dropdownColor: Colors.white,
+                    style: const TextStyle(color: Color(0xFF1C1A24)),
+                    decoration: InputDecoration(
                       labelText: 'Category',
-                      border: OutlineInputBorder(),
+                      labelStyle: const TextStyle(color: Color(0xFF787587)),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xFFEBE8E1)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xFF6B4EFF), width: 2),
+                      ),
                     ),
                     items: categories.map((cat) {
                       return DropdownMenuItem(
@@ -86,12 +114,13 @@ class ExpensesScreen extends StatelessWidget {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6366F1),
+                      backgroundColor: const Color(0xFF6B4EFF),
                       padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text('Add Expense', style: TextStyle(color: Colors.white, fontSize: 16)),
+                    child: const Text('Add Expense', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
                 ],
               ),
             );
@@ -107,11 +136,13 @@ class ExpensesScreen extends StatelessWidget {
     final categoryTotals = expense.getCategoryTotals();
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF9F8F6),
       appBar: AppBar(
-        title: const Text('Expenses'),
+        backgroundColor: const Color(0xFFF9F8F6),
+        title: const Text('Expenses', style: TextStyle(color: Color(0xFF1C1A24), fontWeight: FontWeight.bold, fontSize: 22)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add_rounded),
+            icon: const Icon(Icons.add_rounded, color: Color(0xFF6B4EFF)),
             onPressed: () => _showExpenseFormBottomSheet(context),
           ),
         ],
@@ -123,9 +154,9 @@ class ExpensesScreen extends StatelessWidget {
             padding: const EdgeInsets.all(20.0),
             margin: const EdgeInsets.all(20.0),
             decoration: BoxDecoration(
-              color: const Color(0xFF1E293B),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withOpacity(0.05)),
+              border: Border.all(color: const Color(0xFFEBE8E1)),
             ),
             child: Row(
               children: [
@@ -135,12 +166,12 @@ class ExpensesScreen extends StatelessWidget {
                     children: [
                       const Text(
                         'Total Expenditure',
-                        style: TextStyle(color: Color(0xFF94A3B8), fontSize: 14, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Color(0xFF787587), fontSize: 13, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '\$${expense.totalExpenses.toStringAsFixed(2)}',
-                        style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
+                        '₦${expense.totalExpenses.toStringAsFixed(2)}',
+                        style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF1C1A24)),
                       ),
                     ],
                   ),
@@ -148,10 +179,10 @@ class ExpensesScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF10B981).withOpacity(0.15),
+                    color: const Color(0xFF00BFA5).withOpacity(0.15),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.account_balance_wallet_rounded, size: 28, color: Color(0xFF10B981)),
+                  child: const Icon(Icons.account_balance_wallet_rounded, size: 28, color: Color(0xFF00BFA5)),
                 ),
               ],
             ),
@@ -197,8 +228,8 @@ class ExpensesScreen extends StatelessWidget {
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    '$cat: \$${categoryTotals[cat]!.toStringAsFixed(0)}',
-                                    style: const TextStyle(fontSize: 12, color: Colors.white70),
+                                    '$cat: ₦${categoryTotals[cat]!.toStringAsFixed(0)}',
+                                    style: const TextStyle(fontSize: 12, color: Color(0xFF1C1A24)),
                                   ),
                                 ),
                               ],
@@ -217,12 +248,12 @@ class ExpensesScreen extends StatelessWidget {
           // Transaction list
           Expanded(
             child: expense.isLoading
-                ? const Center(child: CircularProgressIndicator(color: Color(0xFF6366F1)))
+                ? const Center(child: CircularProgressIndicator(color: Color(0xFF6B4EFF)))
                 : expense.expenses.isEmpty
                     ? const Center(
                         child: Text(
                           'No expenses tracked yet.\nTap "+" in the top right to start.',
-                          style: TextStyle(color: Color(0xFF94A3B8), fontSize: 16),
+                          style: TextStyle(color: Color(0xFF787587), fontSize: 16),
                           textAlign: TextAlign.center,
                         ),
                       )
@@ -235,8 +266,9 @@ class ExpensesScreen extends StatelessWidget {
                             margin: const EdgeInsets.only(bottom: 12),
                             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF1E293B),
-                              borderRadius: BorderRadius.circular(12),
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: const Color(0xFFEBE8E1)),
                             ),
                             child: Row(
                               children: [
@@ -259,27 +291,27 @@ class ExpensesScreen extends StatelessWidget {
                                     children: [
                                       Text(
                                         item.title,
-                                        style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 14),
+                                        style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1C1A24), fontSize: 14),
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
                                         '${item.category} | ${DateFormat('MMM d, y').format(item.date)}',
-                                        style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12),
+                                        style: const TextStyle(color: Color(0xFF787587), fontSize: 12),
                                       ),
                                     ],
                                   ),
                                 ),
                                 Text(
-                                  '-\$${item.amount.toStringAsFixed(2)}',
+                                  '-₦${item.amount.toStringAsFixed(2)}',
                                   style: const TextStyle(
-                                    color: Color(0xFFEF4444),
+                                    color: Color(0xFFBA1A1A),
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
                                   ),
                                 ),
                                 const SizedBox(width: 8),
                                 IconButton(
-                                  icon: const Icon(Icons.delete_outline, size: 18, color: Color(0xFF94A3B8)),
+                                  icon: const Icon(Icons.delete_outline, size: 18, color: Color(0xFF787587)),
                                   onPressed: () {
                                     expense.deleteExpense(item.id);
                                   },

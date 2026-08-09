@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Stitch Design System Colors
-  static const Color primary = Color(0xFF6B4EFF);       // Deep Amethyst
-  static const Color secondary = Color(0xFF00BFA5);     // Teal Green
-  static const Color tertiary = Color(0xFFE07A5F);      // Soft Terracotta
-  static const Color background = Color(0xFFFCF8FF);    // Light Purple-tint Background
-  static const Color surface = Color(0xFFFCF8FF);
-  static const Color surfaceContainer = Color(0xFFF1ECFA);
-  static const Color surfaceContainerLowest = Color(0xFFFFFFFF);
-  static const Color onSurface = Color(0xFF1C1A24);
-  static const Color outline = Color(0xFF787587);
+  // Original App Design System Colors
+  static const Color primary = Color(0xFF6B4EFF);       // Vibrant Purple
+  static const Color secondary = Color(0xFF00BFA5);     // Emerald Teal
+  static const Color tertiary = Color(0xFFE07A5F);      // Coral Orange
+  static const Color background = Color(0xFFF9F8F6);    // Off-white / Parchment
+  static const Color surface = Color(0xFFF9F8F6);
+  static const Color surfaceContainerLowest = Color(0xFFFFFFFF); // White Cards
+  static const Color onSurface = Color(0xFF1C1A24);     // Dark Charcoal Text
+  static const Color outline = Color(0xFF787587);       // Muted Gray
   static const Color error = Color(0xFFBA1A1A);
 
   static ThemeData get lightTheme {
@@ -28,29 +27,29 @@ class AppTheme {
         onSurface: onSurface,
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: surface,
+        backgroundColor: background,
         elevation: 0,
-        centerTitle: true,
+        centerTitle: false,
         titleTextStyle: TextStyle(
-          fontFamily: 'Montserrat',
-          fontSize: 20,
+          fontFamily: 'Inter',
+          fontSize: 22,
           fontWeight: FontWeight.bold,
-          color: primary,
+          color: onSurface,
         ),
         iconTheme: IconThemeData(color: primary),
       ),
       textTheme: TextTheme(
-        headlineLarge: GoogleFonts.montserrat(
+        headlineLarge: GoogleFonts.inter(
           fontSize: 32,
           fontWeight: FontWeight.bold,
           color: onSurface,
         ),
-        headlineMedium: GoogleFonts.montserrat(
+        headlineMedium: GoogleFonts.inter(
           fontSize: 24,
           fontWeight: FontWeight.bold,
           color: onSurface,
         ),
-        titleLarge: GoogleFonts.montserrat(
+        titleLarge: GoogleFonts.inter(
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: onSurface,
@@ -63,7 +62,7 @@ class AppTheme {
           fontSize: 14,
           color: outline,
         ),
-        labelLarge: GoogleFonts.spaceGrotesk(
+        labelLarge: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.bold,
           color: onSurface,
@@ -73,16 +72,16 @@ class AppTheme {
         color: surfaceContainerLowest,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           side: const BorderSide(
-            color: Color(0xFFE5E0EF),
+            color: Color(0xFFEBE8E1),
             width: 1,
           ),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: surfaceContainer,
-        indicatorColor: primary.withOpacity(0.15),
+        backgroundColor: surfaceContainerLowest,
+        indicatorColor: primary.withOpacity(0.12),
         labelTextStyle: WidgetStateProperty.all(
           GoogleFonts.inter(
             fontSize: 12,
