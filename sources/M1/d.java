@@ -1,0 +1,8 @@
+package M1;
+
+/* JADX INFO: loaded from: classes.dex */
+public interface d {
+    g getContext();
+
+    void resumeWith(Object obj);
+}

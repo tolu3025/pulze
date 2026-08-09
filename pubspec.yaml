@@ -28,14 +28,3 @@ flutter:
   assets:
     - assets/logo_icon.png
     - assets/logo_text.png
-
-  fonts:
-    - family: Phosphor
-      fonts:
-        - asset: fonts/Phosphor.ttf
-        - asset: fonts/Phosphor-Bold.ttf
-          weight: 700
-        - asset: fonts/Phosphor-Light.ttf
-          weight: 300
-        - asset: fonts/Phosphor-Thin.ttf
-          weight: 100

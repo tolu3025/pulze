@@ -1,0 +1,27 @@
+package com.google.android.gms.internal.p002firebaseauthapi;
+
+import java.util.Objects;
+import q0.r;
+
+/* JADX INFO: loaded from: classes.dex */
+final class zzaby implements zzafv<zzaha> {
+    private final /* synthetic */ zzael zza;
+    private final /* synthetic */ zzaar zzb;
+
+    zzaby(zzaar zzaarVar, zzael zzaelVar) {
+        this.zza = zzaelVar;
+        Objects.requireNonNull(zzaarVar);
+        this.zzb = zzaarVar;
+    }
+
+    @Override // com.google.android.gms.internal.p002firebaseauthapi.zzafv
+    public final /* synthetic */ void zza(zzaha zzahaVar) {
+        zzaha zzahaVar2 = zzahaVar;
+        this.zzb.zza(new zzahv(zzahaVar2.zzb(), zzahaVar2.zza(), Long.valueOf(zzahx.zza(zzahaVar2.zza())), "Bearer"), null, null, Boolean.FALSE, null, this.zza, this);
+    }
+
+    @Override // com.google.android.gms.internal.p002firebaseauthapi.zzafs
+    public final void zza(String str) {
+        this.zza.zza(r.a(str));
+    }
+}
