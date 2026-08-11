@@ -11,6 +11,7 @@ import '../services/notification_service.dart';
 
 class DashboardScreen extends StatelessWidget {
   static bool _motivationNotifiedToday = false;
+  static int _selectedQuoteIndex = -1;
   const DashboardScreen({super.key});
 
   @override
@@ -38,7 +39,6 @@ class DashboardScreen extends StatelessWidget {
     }
     final streakStr = maxStreak > 0 ? '$maxStreak Days' : '0 Days';
 
-    final dayOfYear = now.difference(DateTime(now.year, 1, 1)).inDays;
     const motivations = [
       'Manage your pocket money wisely. A wealthy student is a disciplined student.',
       'Small daily improvements are the key to staggering long-term results.',
@@ -48,7 +48,10 @@ class DashboardScreen extends StatelessWidget {
       'Discipline is choosing between what you want now and what you want most.',
       'The secret of getting ahead is getting started.',
     ];
-    final motivationText = motivations[dayOfYear % motivations.length];
+    if (_selectedQuoteIndex == -1) {
+      _selectedQuoteIndex = DateTime.now().microsecondsSinceEpoch % motivations.length;
+    }
+    final motivationText = motivations[_selectedQuoteIndex];
 
     // Total spent in NAIRA (₦)
     final totalSpent = expense.totalExpenses;
