@@ -24,9 +24,9 @@ class _NavigationScreenState extends State<NavigationScreen> {
 
   final List<Widget> _screens = const [
     DashboardScreen(),
-    AcademicsScreen(),
     HabitsScreen(),
     ExpensesScreen(),
+    AcademicsScreen(),
     StudyScreen(),
     ProfileScreen(),
   ];
@@ -59,33 +59,33 @@ class _NavigationScreenState extends State<NavigationScreen> {
         },
         destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.dashboard_outlined),
-            selectedIcon: Icon(Icons.dashboard, color: Color(0xFF818CF8)),
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home_outlined, color: Color(0xFF6B4EFF)),
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.school_outlined),
-            selectedIcon: Icon(Icons.school, color: Color(0xFF818CF8)),
-            label: 'Grades',
-          ),
-          NavigationDestination(
             icon: Icon(Icons.check_circle_outline),
-            selectedIcon: Icon(Icons.check_circle, color: Color(0xFF818CF8)),
+            selectedIcon: Icon(Icons.check_circle_outline, color: Color(0xFF6B4EFF)),
             label: 'Habits',
           ),
           NavigationDestination(
             icon: Icon(Icons.account_balance_wallet_outlined),
-            selectedIcon: Icon(Icons.account_balance_wallet, color: Color(0xFF818CF8)),
-            label: 'Money',
+            selectedIcon: Icon(Icons.account_balance_wallet_outlined, color: Color(0xFF6B4EFF)),
+            label: 'Expenses',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.school_outlined),
+            selectedIcon: Icon(Icons.school_outlined, color: Color(0xFF6B4EFF)),
+            label: 'Academics',
           ),
           NavigationDestination(
             icon: Icon(Icons.timer_outlined),
-            selectedIcon: Icon(Icons.timer, color: Color(0xFF818CF8)),
+            selectedIcon: Icon(Icons.timer_outlined, color: Color(0xFF6B4EFF)),
             label: 'Study',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person, color: Color(0xFF818CF8)),
+            selectedIcon: Icon(Icons.person_outline, color: Color(0xFF6B4EFF)),
             label: 'Profile',
           ),
         ],

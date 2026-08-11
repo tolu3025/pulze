@@ -735,14 +735,7 @@ class _AcademicsScreenState extends State<AcademicsScreen> with SingleTickerProv
                                 },
                               ),
                             ),
-                            gridData: FlGridData(
-                              show: true,
-                              drawVerticalLine: true,
-                              horizontalInterval: 1,
-                              verticalInterval: 1,
-                              getDrawingHorizontalLine: (value) => const FlLine(color: Color(0xFFEBE8E1), strokeWidth: 1, dashArray: [5, 5]),
-                              getDrawingVerticalLine: (value) => const FlLine(color: Color(0xFFEBE8E1), strokeWidth: 1, dashArray: [5, 5]),
-                            ),
+                            gridData: const FlGridData(show: false),
                             titlesData: FlTitlesData(
                               leftTitles: AxisTitles(
                                 sideTitles: SideTitles(
@@ -777,10 +770,7 @@ class _AcademicsScreenState extends State<AcademicsScreen> with SingleTickerProv
                               rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                               topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                             ),
-                            borderData: FlBorderData(
-                              show: true,
-                              border: Border.all(color: const Color(0xFFEBE8E1)),
-                            ),
+                            borderData: FlBorderData(show: false),
                             minX: 0,
                             maxX: (academic.semesters.length - 1).toDouble() > 0 ? (academic.semesters.length - 1).toDouble() : 1.0,
                             minY: 0,
