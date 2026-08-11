@@ -11,6 +11,8 @@ import 'providers/habit_provider.dart';
 import 'providers/study_provider.dart';
 import 'screens/splash_screen.dart';
 
+import 'services/notification_service.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -18,8 +20,9 @@ void main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    await NotificationService().init();
   } catch (e) {
-    debugPrint('Firebase initialization warning: $e');
+    debugPrint('Initialization warning: $e');
   }
 
   runApp(
@@ -43,6 +46,7 @@ class PulzeApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Pulze',
+      navigatorKey: NotificationService.navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
       home: const SplashScreen(),

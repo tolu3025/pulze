@@ -1,0 +1,5 @@
+analyzer:
+  exclude:
+    - "recovery/**"
+    - "build/**"
+    - ".dart_tool/**"

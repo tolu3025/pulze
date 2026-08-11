@@ -1,20 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'login_screen.dart';
-
-class OnboardingPageData {
-  final String title;
-  final String description;
-
-  const OnboardingPageData({
-    required this.title,
-    required this.description,
-  });
-}
-
+// Forensic Reconstruction of OnboardingScreen
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
-
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
@@ -23,7 +9,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  final List<OnboardingPageData> _pages = const [
+  final List<OnboardingPageData> _pages = [
     OnboardingPageData(
       title: "Welcome to Pulze",
       description: "Your personal academic companion. Find your rhythm, track your growth, and manage your student life effectively.",
@@ -41,12 +27,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       description: "Study hard, track your budget, build consistency, and take care of your mind.",
     ),
   ];
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
 
   void _finishOnboarding() async {
     final prefs = await SharedPreferences.getInstance();
@@ -66,6 +46,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
           child: Column(
             children: [
+              // PageView for slide items
               Expanded(
                 child: PageView.builder(
                   controller: _pageController,
@@ -80,40 +61,34 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Logo icon asset display
-                        Image.asset(
-                          'assets/logo_icon.png',
+                        // App Logo Icon
+                        Container(
                           width: 100,
                           height: 100,
-                          errorBuilder: (_, __, ___) => Container(
-                            width: 100,
-                            height: 100,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF6B4EFF),
-                              borderRadius: BorderRadius.circular(28),
-                            ),
-                            child: const Center(
-                              child: Text(
-                                'P',
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 54,
-                                  fontWeight: FontWeight.w900,
-                                  color: Colors.white,
-                                  fontStyle: FontStyle.italic,
-                                ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF6B4EFF),
+                            borderRadius: BorderRadius.circular(28),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'P',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 54,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                                fontStyle: FontStyle.italic,
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 48),
+                        const SizedBox(height: 32),
                         Text(
                           page.title,
                           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: const Color(0xFF1C1A24),
                               ),
-                          textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 16),
                         Text(
@@ -121,7 +96,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           style: const TextStyle(
                             fontSize: 15,
                             color: Color(0xFF787587),
-                            height: 1.4,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -130,27 +104,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   },
                 ),
               ),
-              
-              // Slide indicator dots
+              // Indicator Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  _pages.length,
-                  (index) => AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    width: _currentPage == index ? 16 : 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: _currentPage == index ? const Color(0xFF6B4EFF) : const Color(0xFFEBE8E1),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
+                children: List.generate(_pages.length, (index) => Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  width: _currentPage == index ? 16 : 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: _currentPage == index ? const Color(0xFF6B4EFF) : const Color(0xFFEBE8E1),
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                ),
+                )),
               ),
               const SizedBox(height: 32),
-              
-              // Action Navigation Button
+              // Action Button (Next / Get Started)
               SizedBox(
                 width: double.infinity,
                 height: 54,
@@ -167,7 +135,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF6B4EFF),
-                    elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),

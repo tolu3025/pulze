@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import '../providers/academic_provider.dart';
 import '../providers/expense_provider.dart';
 import '../providers/habit_provider.dart';
 import '../providers/study_provider.dart';
 import '../providers/auth_provider.dart';
+import '../services/notification_service.dart';
 
 class DashboardScreen extends StatelessWidget {
+  static bool _motivationNotifiedToday = false;
   const DashboardScreen({super.key});
 
   @override
@@ -25,23 +29,35 @@ class DashboardScreen extends StatelessWidget {
     // Study minutes calculation
     final hours = study.totalStudyTime ~/ 3600;
     final minutes = (study.totalStudyTime % 3600) ~/ 60;
-    final studyStr = study.totalStudyTime > 0 ? '${hours}h ${minutes}m' : '0h 26m';
+    final studyStr = study.totalStudyTime > 0 ? '${hours}h ${minutes}m' : '0h 0m';
 
     // Calculate habits streak
     int maxStreak = 0;
     for (var h in habit.habits) {
       if (h.streak > maxStreak) maxStreak = h.streak;
     }
-    final streakStr = maxStreak > 0 ? '$maxStreak Days' : '1 Days';
+    final streakStr = maxStreak > 0 ? '$maxStreak Days' : '0 Days';
+
+    final dayOfYear = now.difference(DateTime(now.year, 1, 1)).inDays;
+    const motivations = [
+      'Manage your pocket money wisely. A wealthy student is a disciplined student.',
+      'Small daily improvements are the key to staggering long-term results.',
+      'Your future is created by what you do today, not tomorrow.',
+      'Success is the sum of small efforts, repeated day in and day out.',
+      'Focus on being productive instead of busy.',
+      'Discipline is choosing between what you want now and what you want most.',
+      'The secret of getting ahead is getting started.',
+    ];
+    final motivationText = motivations[dayOfYear % motivations.length];
 
     // Total spent in NAIRA (₦)
     final totalSpent = expense.totalExpenses;
     final spentStr = totalSpent > 0 
         ? (totalSpent >= 1000 ? '₦${(totalSpent/1000).toStringAsFixed(0)}K' : '₦${totalSpent.toStringAsFixed(0)}')
-        : '₦2K';
+        : '₦0';
 
     // CGPA
-    final cgpaStr = academic.cgpa > 0 ? academic.cgpa.toStringAsFixed(2) : '5.00';
+    final cgpaStr = academic.cgpa > 0 ? academic.cgpa.toStringAsFixed(2) : '0.00';
 
     // Get time based greeting
     String getGreeting() {
@@ -59,9 +75,10 @@ class DashboardScreen extends StatelessWidget {
         name = email.split('@')[0];
         name = name.split('.').map((s) => s.isNotEmpty ? s[0].toUpperCase() + s.substring(1) : '').join(' ');
       } else {
-        name = 'Toluwanimi Oyetade';
+        name = 'Student';
       }
     }
+    name = name.split(' ').first;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9F8F6),
@@ -73,10 +90,10 @@ class DashboardScreen extends StatelessWidget {
           padding: const EdgeInsets.only(left: 20.0, top: 8.0, bottom: 8.0),
           child: Row(
             children: [
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 18,
-                backgroundColor: Color(0xFFEBE8E1),
-                child: Icon(Icons.person, color: Color(0xFF787587), size: 20),
+                backgroundColor: const Color(0xFFEBE8E1),
+                backgroundImage: NetworkImage('https://api.dicebear.com/7.x/bottts/png?seed=${auth.user?.uid ?? "default"}'),
               ),
               const SizedBox(width: 8),
               Text(
@@ -91,16 +108,185 @@ class DashboardScreen extends StatelessWidget {
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Color(0xFF6B4EFF)),
-            onPressed: () {
-              auth.signOut();
+          StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('users')
+                .doc(FirebaseAuth.instance.currentUser?.uid ?? 'empty')
+                .collection('notifications')
+                .where('isRead', isEqualTo: false)
+                .snapshots(),
+            builder: (context, snapshot) {
+              final unreadCount = snapshot.data?.docs.length ?? 0;
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.notifications_none_rounded, color: Color(0xFF6B4EFF)),
+                    onPressed: () async {
+                      final user = FirebaseAuth.instance.currentUser;
+                      if (user != null) {
+                        final unreadDocs = snapshot.data?.docs ?? [];
+                        final batch = FirebaseFirestore.instance.batch();
+                        for (var doc in unreadDocs) {
+                          batch.update(doc.reference, {'isRead': true});
+                        }
+                        await batch.commit().catchError((e) {
+                          debugPrint('Error marking notifications as read: $e');
+                        });
+                      }
+ 
+                      if (context.mounted) {
+                        showModalBottomSheet(
+                          context: context,
+                          backgroundColor: const Color(0xFFF9F8F6),
+                          isScrollControlled: true,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                          ),
+                          builder: (context) {
+                            final user = FirebaseAuth.instance.currentUser;
+                            return Container(
+                              height: MediaQuery.of(context).size.height * 0.5,
+                              padding: const EdgeInsets.all(20.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        'Notifications',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF1C1A24),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.close, color: Color(0xFF787587)),
+                                        onPressed: () => Navigator.pop(context),
+                                      ),
+                                    ],
+                                  ),
+                                  const Divider(color: Color(0xFFEBE8E1)),
+                                  const SizedBox(height: 12),
+                                  user == null
+                                      ? const Center(
+                                          child: Text(
+                                            'Please log in to view notifications.',
+                                            style: TextStyle(color: Color(0xFF787587)),
+                                          ),
+                                        )
+                                      : Expanded(
+                                          child: StreamBuilder<QuerySnapshot>(
+                                            stream: FirebaseFirestore.instance
+                                                .collection('users')
+                                                .doc(user.uid)
+                                                .collection('notifications')
+                                                .orderBy('timestamp', descending: true)
+                                                .snapshots(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasError) {
+                                                return const Center(
+                                                  child: Text(
+                                                    'Error loading notifications.',
+                                                    style: TextStyle(color: Color(0xFF787587)),
+                                                  ),
+                                                );
+                                              }
+                                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                                return const Center(
+                                                  child: CircularProgressIndicator(color: Color(0xFF6B4EFF)),
+                                                );
+                                              }
+                                              final docs = snapshot.data?.docs ?? [];
+                                              if (docs.isEmpty) {
+                                                return const Center(
+                                                  child: Padding(
+                                                    padding: EdgeInsets.symmetric(vertical: 24.0),
+                                                    child: Text(
+                                                      'No notifications yet.',
+                                                      style: TextStyle(color: Color(0xFF787587), fontSize: 14),
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                              return ListView.builder(
+                                                itemCount: docs.length,
+                                                itemBuilder: (context, index) {
+                                                  final data = docs[index].data() as Map<String, dynamic>;
+                                                  final title = data['title'] ?? 'Notification';
+                                                  final body = data['body'] ?? '';
+                                                  return ListTile(
+                                                    contentPadding: EdgeInsets.zero,
+                                                    leading: const CircleAvatar(
+                                                      backgroundColor: Color(0xFFF1ECFA),
+                                                      child: Icon(Icons.notifications_active_outlined, color: Color(0xFF6B4EFF), size: 20),
+                                                    ),
+                                                    title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1C1A24))),
+                                                    subtitle: Text(body, style: const TextStyle(color: Color(0xFF787587), fontSize: 12)),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                  const SizedBox(height: 20),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    },
+                  ),
+                  if (unreadCount > 0)
+                    Positioned(
+                      right: 8,
+                      top: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFBA1A1A),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 16,
+                          minHeight: 16,
+                        ),
+                        child: Text(
+                          '$unreadCount',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
+              );
             },
           ),
           const SizedBox(width: 12),
         ],
       ),
-      body: SingleChildScrollView(
+      body: Builder(
+        builder: (context) {
+          // Trigger Daily Motivation Notification once per app run / session
+          if (!_motivationNotifiedToday) {
+            _motivationNotifiedToday = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              await NotificationService().showNotification(
+                id: 999,
+                title: 'Daily Motivation',
+                body: motivationText,
+              );
+            });
+          }
+          return SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,7 +342,7 @@ class DashboardScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'Manage your pocket money wisely. A wealthy student is a disciplined student.',
+                          motivationText,
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 color: const Color(0xFF1C1A24),
                                 fontStyle: FontStyle.italic,
@@ -249,9 +435,10 @@ class DashboardScreen extends StatelessWidget {
             const SizedBox(height: 20),
           ],
         ),
-      ),
-    );
-  }
+      );
+    }),
+  );
+}
 
   Widget _buildMetricCard(
     BuildContext context, {

@@ -93,6 +93,11 @@ class AppTheme {
           const IconThemeData(color: outline),
         ),
       ),
+      snackBarTheme: const SnackBarThemeData(
+        backgroundColor: Colors.white,
+        contentTextStyle: TextStyle(color: Color(0xFF1C1A24)),
+        behavior: SnackBarBehavior.floating,
+      ),
     );
   }
 

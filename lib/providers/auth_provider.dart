@@ -31,10 +31,29 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> createUserWithEmailAndPassword(String email, String password) async {
+  Future<void> createUserWithEmailAndPassword(String email, String password, String firstName, String lastName) async {
     _setLoading(true);
     try {
-      await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      final userCredential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      final displayName = '$firstName $lastName'.trim();
+      if (displayName.isNotEmpty) {
+        await userCredential.user?.updateDisplayName(displayName);
+        await userCredential.user?.reload();
+        _user = _auth.currentUser;
+      }
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> updateProfileName(String firstName, String lastName) async {
+    _setLoading(true);
+    try {
+      final displayName = '$firstName $lastName'.trim();
+      await _user?.updateDisplayName(displayName);
+      await _user?.reload();
+      _user = _auth.currentUser;
+      notifyListeners();
     } finally {
       _setLoading(false);
     }
@@ -53,6 +72,18 @@ class AuthProvider extends ChangeNotifier {
     _setLoading(true);
     try {
       await _auth.signOut();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> updateProfilePhoto(String photoUrl) async {
+    _setLoading(true);
+    try {
+      await _user?.updatePhotoURL(photoUrl);
+      await _user?.reload();
+      _user = _auth.currentUser;
+      notifyListeners();
     } finally {
       _setLoading(false);
     }

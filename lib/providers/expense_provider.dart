@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/expense_model.dart';
 import '../services/firebase_service.dart';
+import '../services/notification_service.dart';
 
 class ExpenseProvider extends ChangeNotifier {
   final FirebaseService _firebaseService = FirebaseService();
@@ -45,19 +46,29 @@ class ExpenseProvider extends ChangeNotifier {
   }
 
   Future<void> addExpense(String title, String category, double amount, DateTime date) async {
-    final docRef = _firebaseService.expensesCol.doc();
-    final expense = Expense(
-      id: docRef.id,
-      title: title,
-      category: category,
-      amount: amount,
-      date: date,
-    );
-    await docRef.set(expense.toFirestore());
+    try {
+      final docRef = _firebaseService.expensesCol.doc();
+      final expense = Expense(
+        id: docRef.id,
+        title: title,
+        category: category,
+        amount: amount,
+        date: date,
+      );
+      await docRef.set(expense.toFirestore());
+    } catch (e) {
+      debugPrint('Error adding expense: $e');
+      rethrow;
+    }
   }
 
   Future<void> deleteExpense(String expenseId) async {
-    await _firebaseService.expensesCol.doc(expenseId).delete();
+    try {
+      await _firebaseService.expensesCol.doc(expenseId).delete();
+    } catch (e) {
+      debugPrint('Error deleting expense: $e');
+      rethrow;
+    }
   }
 
   Map<String, double> getCategoryTotals() {

@@ -1,0 +1,15 @@
+=== ASSETS & FONTS (FACTUAL RECOVERY) ===
+Asset files inside resources/assets/flutter_assets/:
+ - assets/logo_icon.png
+ - assets/logo_text.png
+ - shaders/ink_sparkle.frag
+
+Registered Font Config:
+ - MaterialIcons
+ - CupertinoIcons
+ - PhosphorBold
+ - PhosphorDuotone
+ - PhosphorFill
+ - PhosphorLight
+ - PhosphorThin
+ - PhosphorRegular

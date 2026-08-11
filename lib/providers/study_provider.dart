@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/study_session_model.dart';
 import '../services/firebase_service.dart';
+import '../services/notification_service.dart';
 
 class StudyProvider extends ChangeNotifier {
   final FirebaseService _firebaseService = FirebaseService();
@@ -12,8 +13,9 @@ class StudyProvider extends ChangeNotifier {
   // Active Focus Timer State
   Timer? _timer;
   int _timerSeconds = 0; // standard focus time is 25 min (1500s)
+  int _initialTimerSeconds = 0;
   bool _isTimerRunning = false;
-  String _selectedSubject = 'General';
+  String _selectedSubject = 'Self Study';
 
   List<StudySession> get sessions => _sessions;
   bool get isLoading => _isLoading;
@@ -62,6 +64,7 @@ class StudyProvider extends ChangeNotifier {
   // Timer Control Methods
   void startTimer(int seconds) {
     if (_isTimerRunning) return;
+    _initialTimerSeconds = seconds;
     _timerSeconds = seconds;
     _isTimerRunning = true;
     notifyListeners();
@@ -103,27 +106,57 @@ class StudyProvider extends ChangeNotifier {
     
     if (saveSession && _timerSeconds == 0) {
       // Finished session
-      await addStudySession(_selectedSubject, 1500); // 25 mins
+      await addStudySession(_selectedSubject, _initialTimerSeconds);
+      try {
+        await NotificationService().showNotification(
+          id: 1,
+          title: 'Timer Completed!',
+          body: 'Your focus session on "$_selectedSubject" has finished. Take a 5-minute break now to stay sharp!',
+        );
+      } catch (e) {
+        debugPrint('Notification error: $e');
+      }
     }
     
     _timerSeconds = 0;
+    _initialTimerSeconds = 0;
     notifyListeners();
   }
 
   // Database operations
   Future<void> addStudySession(String subject, int durationInSeconds) async {
-    final docRef = _firebaseService.sessionsCol.doc();
-    final session = StudySession(
-      id: docRef.id,
-      subject: subject,
-      duration: durationInSeconds,
-      date: DateTime.now(),
-    );
-    await docRef.set(session.toFirestore());
+    try {
+      final docRef = _firebaseService.sessionsCol.doc();
+      final session = StudySession(
+        id: docRef.id,
+        subject: subject,
+        duration: durationInSeconds,
+        date: DateTime.now(),
+      );
+      await docRef.set(session.toFirestore());
+      await NotificationService().showNotification(
+        id: session.id.hashCode,
+        title: 'Study Session Logged',
+        body: 'Logged ${durationInSeconds ~/ 60}m of studying "$subject".',
+      );
+    } catch (e) {
+      debugPrint('Error adding study session: $e');
+      rethrow;
+    }
   }
 
   Future<void> deleteStudySession(String sessionId) async {
-    await _firebaseService.sessionsCol.doc(sessionId).delete();
+    try {
+      await _firebaseService.sessionsCol.doc(sessionId).delete();
+      await NotificationService().showNotification(
+        id: sessionId.hashCode,
+        title: 'Session Deleted',
+        body: 'Study session was deleted.',
+      );
+    } catch (e) {
+      debugPrint('Error deleting study session: $e');
+      rethrow;
+    }
   }
 
   Map<String, int> getSubjectTotals() {

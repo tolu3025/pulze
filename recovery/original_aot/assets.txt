@@ -1,0 +1,17 @@
+=== ORIGINAL APPLICATION ASSETS ===
+Branding Assets:
+ - assets/logo_icon.png (Size: 1,020,079 bytes)
+ - assets/logo_text.png (Size: 49,550 bytes)
+
+Icon Fonts:
+ - fonts/MaterialIcons-Regular.otf (Size: 1,516 bytes)
+ - packages/cupertino_icons/assets/CupertinoIcons.ttf (Cupertino Icons standard font)
+ - packages/phosphor_flutter/lib/fonts/Phosphor-Bold.ttf
+ - packages/phosphor_flutter/lib/fonts/Phosphor-Duotone.ttf
+ - packages/phosphor_flutter/lib/fonts/Phosphor-Fill.ttf
+ - packages/phosphor_flutter/lib/fonts/Phosphor-Light.ttf
+ - packages/phosphor_flutter/lib/fonts/Phosphor-Thin.ttf
+ - packages/phosphor_flutter/lib/fonts/Phosphor.ttf
+
+Shaders:
+ - shaders/ink_sparkle.frag

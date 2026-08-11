@@ -25,4 +25,5 @@ class FirebaseService {
   CollectionReference get expensesCol => userDoc.collection('expenses');
   CollectionReference get habitsCol => userDoc.collection('habits');
   CollectionReference get sessionsCol => userDoc.collection('study_sessions');
+  CollectionReference get tasksCol => userDoc.collection('tasks');
 }

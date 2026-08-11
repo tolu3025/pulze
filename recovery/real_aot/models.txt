@@ -1,0 +1,24 @@
+=== DATA MODELS (FACTUAL RECOVERY) ===
+1. AcademicRecordModel
+   - Fields: id, courseCode, grade, creditUnits, semesterId
+   - Factory: AcademicRecordModel.fromFirestore()
+
+2. ExpenseModel
+   - Fields: id, title, amount, date, category
+   - Factory: ExpenseModel.fromFirestore()
+
+3. HabitModel
+   - Fields: id, title, streak, streakCount, frequency, completedDates
+   - Factory: HabitModel.fromFirestore()
+
+4. StudySessionModel
+   - Fields: id, subject, duration, date
+   - Factory: StudySessionModel.fromFirestore()
+
+5. CalendarTask
+   - Fields: id, title, isCompleted, date
+   - Factory: CalendarTask.fromFirestore()
+
+6. UserProfile
+   - Fields: id, displayName, email, lastSignIn
+   - Factory: UserProfile.fromFirestore()

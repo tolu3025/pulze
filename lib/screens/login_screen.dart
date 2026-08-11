@@ -14,6 +14,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   
   bool _isSignUp = false;
   bool _obscurePassword = true;
@@ -22,6 +24,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     super.dispose();
   }
 
@@ -34,7 +38,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       if (_isSignUp) {
-        await authProvider.createUserWithEmailAndPassword(email, password);
+        final firstName = _firstNameController.text.trim();
+        final lastName = _lastNameController.text.trim();
+        await authProvider.createUserWithEmailAndPassword(email, password, firstName, lastName);
       } else {
         await authProvider.signInWithEmailAndPassword(email, password);
       }
@@ -57,23 +63,25 @@ class _LoginScreenState extends State<LoginScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text('Reset Password'),
+        backgroundColor: const Color(0xFFF9F8F6),
+        title: const Text('Reset Password', style: TextStyle(color: Color(0xFF1C1A24), fontWeight: FontWeight.bold)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
               'Enter your email address and we will send you a password reset link.',
-              style: TextStyle(color: Color(0xFF94A3B8)),
+              style: TextStyle(color: Color(0xFF787587)),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: emailResetController,
+              style: const TextStyle(color: Color(0xFF1C1A24)),
               decoration: const InputDecoration(
                 labelText: 'Email',
+                labelStyle: TextStyle(color: Color(0xFF787587)),
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.email_outlined),
+                prefixIcon: Icon(Icons.email_outlined, color: Color(0xFF787587)),
               ),
               keyboardType: TextInputType.emailAddress,
             ),
@@ -82,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel', style: TextStyle(color: Color(0xFF94A3B8))),
+            child: const Text('Cancel', style: TextStyle(color: Color(0xFF787587))),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -103,8 +111,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 }
               }
             },
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF6366F1)),
-            child: const Text('Reset', style: TextStyle(color: Colors.white)),
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF6B4EFF)),
+            child: const Text('Reset', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -115,13 +123,13 @@ class _LoginScreenState extends State<LoginScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text('Error'),
-        content: Text(msg),
+        backgroundColor: const Color(0xFFF9F8F6),
+        title: const Text('Error', style: TextStyle(color: Color(0xFFBA1A1A), fontWeight: FontWeight.bold)),
+        content: Text(msg, style: const TextStyle(color: Color(0xFF1C1A24))),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK', style: TextStyle(color: Color(0xFF6366F1))),
+            child: const Text('OK', style: TextStyle(color: Color(0xFF6B4EFF), fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -145,20 +153,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   const SizedBox(height: 20),
                   // Pulze Logo
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Pulze',
-                        style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                              color: const Color(0xFF1C1A24),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 36,
-                            ),
-                      ),
-                      const SizedBox(width: 4),
-                      const Icon(Icons.auto_awesome, color: Color(0xFF00BFA5), size: 20),
-                    ],
+                  Center(
+                    child: Image.asset(
+                      'assets/logo_icon.png',
+                      height: 90,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Center(
+                    child: Image.asset(
+                      'assets/logo_text.png',
+                      height: 28,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Text(
@@ -173,6 +181,111 @@ class _LoginScreenState extends State<LoginScreen> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 48),
+
+                  if (_isSignUp) ...[
+                    // First Name Field
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'FIRST NAME',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.8,
+                            color: Color(0xFF1C1A24),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: _firstNameController,
+                          style: const TextStyle(color: Color(0xFF1C1A24)),
+                          decoration: InputDecoration(
+                            hintText: 'Enter your first name',
+                            hintStyle: const TextStyle(color: Color(0xFF787587), fontSize: 14),
+                            prefixIcon: const Icon(Icons.person_outline_rounded, color: Color(0xFF1C1A24)),
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: const BorderSide(color: Color(0xFFEBE8E1), width: 1),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: const BorderSide(color: Color(0xFF6B4EFF), width: 2),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: const BorderSide(color: Color(0xFFBA1A1A)),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: const BorderSide(color: Color(0xFFBA1A1A), width: 1.5),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Please enter your first name';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    // Last Name Field
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'LAST NAME',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.8,
+                            color: Color(0xFF1C1A24),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: _lastNameController,
+                          style: const TextStyle(color: Color(0xFF1C1A24)),
+                          decoration: InputDecoration(
+                            hintText: 'Enter your last name',
+                            hintStyle: const TextStyle(color: Color(0xFF787587), fontSize: 14),
+                            prefixIcon: const Icon(Icons.person_outline_rounded, color: Color(0xFF1C1A24)),
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: const BorderSide(color: Color(0xFFEBE8E1), width: 1),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: const BorderSide(color: Color(0xFF6B4EFF), width: 2),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: const BorderSide(color: Color(0xFFBA1A1A)),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: const BorderSide(color: Color(0xFFBA1A1A), width: 1.5),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Please enter your last name';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                  ],
 
                   // Email Field
                   Column(

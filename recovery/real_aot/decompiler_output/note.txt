@@ -1,0 +1,1 @@
+Production AOT binary (symbols stripped except for Dart runtime bootstrap references: VM/Isolate snapshots entry points). Parsing done via heap parsing / data string pools extraction.

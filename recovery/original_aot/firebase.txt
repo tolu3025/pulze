@@ -1,0 +1,16 @@
+=== FIREBASE CONFIGURATION (FROM ANDROID RESOURCES strings.xml) ===
+Project ID: pulze-student-app
+Google API Key: AIzaSyAPWgBY32UnR__yT_WGsSF-f3T4PJEwda0
+Google App ID: 1:273748081036:android:e7fb63bafb28c5dbbbbea9
+Storage Bucket: pulze-student-app.firebasestorage.app
+Messaging Sender ID: 273748081036
+
+=== FIRESTORE COLLECTION PATHS (FROM LIBRAPP.SO) ===
+Root Document: users/{uid}
+Subcollections:
+ - academic_records   (Saves AcademicRecordModel)
+ - expenses           (Saves ExpenseModel)
+ - habits             (Saves HabitModel)
+ - study_sessions     (Saves StudySessionModel)
+ - tasks              (Saves CalendarTask)
+ - sus_surveys        (Saves survey responses & final SUS score)

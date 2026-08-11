@@ -1,0 +1,24 @@
+=== WIDGETS USED IN CONSTRUCTION (STRONG INFERENCE) ===
+Core Scaffold/Structures:
+ - Scaffold (present in all major layouts)
+ - SafeArea (present in OnboardingScreen, SplashScreen, NavigationScreen)
+ - Padding, SizedBox, Container, Expanded, Flexible, Stack, Align
+
+Layout Elements:
+ - Column (present in Splash, Onboarding, Login, form sheets)
+ - Row (present in metric details, list items, custom headers)
+ - Card (present in survey questions, records list, history logger)
+ - GridView (present in Dashboard metrics grid)
+ - ListView (present in history list, habits list, expenses list)
+ - PageView (present in OnboardingScreen page slider)
+ - TabBar & TabBarView (present in StudyScreen for Timer vs History tabs)
+ - BottomNavigationBar (present in NavigationScreen shell)
+
+Interactive Elements:
+ - GestureDetector, InkWell
+ - ElevatedButton, TextButton, IconButton
+ - TextField, DropdownButtonFormField
+
+Popup Overlays:
+ - showModalBottomSheet (present in Habits task sheet, habits form, expenses form)
+ - AlertDialog (present in Study duration edit, SUS thank you dialog)

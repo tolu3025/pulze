@@ -1,0 +1,19 @@
+=== FIREBASE/BACKEND OPERATIONS (FACTUAL RECOVERY) ===
+Configuration Credentials (google-services compiled resources):
+ - Project ID: pulze-student-app
+ - Web/Android API Key: AIzaSyAPWgBY32UnR__yT_WGsSF-f3T4PJEwda0
+ - Application ID: 1:273748081036:android:e7fb63bafb28c5dbbbbea9
+ - Storage Bucket: pulze-student-app.firebasestorage.app
+
+Database Engine:
+ - Cloud Firestore (Pigeon SDK binding)
+
+Database Layout:
+ - Root Document: users/{uid}
+ - Nested Subcollections:
+   * academic_records (stores student grades, courses)
+   * expenses (stores logged purchases, price, item name)
+   * habits (stores custom habits, Streaks)
+   * tasks (stores daily schedule calendar tasks)
+   * study_sessions (stores focused learning interval stats)
+   * sus_surveys (stores System Usability Scale test metrics)

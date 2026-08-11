@@ -1,0 +1,39 @@
+=== DART LIBRARIES (FACTUAL RECOVERY) ===
+Internal Application Files:
+ - package:pulze/main.dart
+ - package:pulze/models/academic_record_model.dart
+ - package:pulze/models/expense_model.dart
+ - package:pulze/models/habit_model.dart
+ - package:pulze/models/models.dart
+ - package:pulze/models/study_session_model.dart
+ - package:pulze/providers/academic_provider.dart
+ - package:pulze/providers/auth_provider.dart
+ - package:pulze/providers/expense_provider.dart
+ - package:pulze/providers/habit_provider.dart
+ - package:pulze/providers/study_provider.dart
+ - package:pulze/screens/academics_screen.dart
+ - package:pulze/screens/dashboard_screen.dart
+ - package:pulze/screens/expenses_screen.dart
+ - package:pulze/screens/habits_screen.dart
+ - package:pulze/screens/login_screen.dart
+ - package:pulze/screens/navigation_screen.dart
+ - package:pulze/screens/onboarding_screen.dart
+ - package:pulze/screens/profile_screen.dart
+ - package:pulze/screens/splash_screen.dart
+ - package:pulze/screens/study_screen.dart
+ - package:pulze/screens/sus_screen.dart
+ - package:pulze/services/firebase_service.dart
+ - package:pulze/theme.dart
+
+Third-Party Packages:
+ - package:firebase_core/firebase_core.dart
+ - package:firebase_auth/firebase_auth.dart
+ - package:cloud_firestore/cloud_firestore.dart
+ - package:firebase_storage/firebase_storage.dart
+ - package:shared_preferences/shared_preferences.dart
+ - package:image_picker/image_picker.dart
+ - package:provider/provider.dart
+ - package:google_fonts/google_fonts.dart
+ - package:phosphor_flutter/phosphor_flutter.dart
+ - package:fl_chart/fl_chart.dart
+ - package:intl/intl.dart

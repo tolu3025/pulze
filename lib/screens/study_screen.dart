@@ -348,6 +348,34 @@ class _StudyScreenState extends State<StudyScreen> with SingleTickerProviderStat
                                 '$minStr min',
                                 style: const TextStyle(color: Color(0xFF6B4EFF), fontWeight: FontWeight.bold, fontSize: 15),
                               ),
+                              const SizedBox(width: 8),
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline, color: Color(0xFFE07A5F), size: 20),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      backgroundColor: Colors.white,
+                                      title: const Text('Delete Session', style: TextStyle(color: Color(0xFF1C1A24))),
+                                      content: const Text('Are you sure you want to delete this study session?', style: TextStyle(color: Color(0xFF787587))),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context),
+                                          child: const Text('Cancel', style: TextStyle(color: Color(0xFF787587))),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            study.deleteStudySession(session.id);
+                                            Navigator.pop(context);
+                                          },
+                                          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFBA1A1A)),
+                                          child: const Text('Delete', style: TextStyle(color: Colors.white)),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
                             ],
                           ),
                         );

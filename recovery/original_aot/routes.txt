@@ -1,0 +1,18 @@
+=== ROUTING & NAVIGATION ===
+Navigation Mode: MaterialPageRoute & Navigator pushing directly (AOT symbols show implicit Widget page build structures rather than named routing paths).
+Initial Route: defaultRouteName ('/') routes to SplashScreen, which determines destination based on Onboarding & Auth flags.
+
+Routes mapped by widget push:
+ - SplashScreen -> OnboardingScreen (if SharedPreferences 'completed_onboarding' is false)
+ - SplashScreen -> LoginScreen (if 'completed_onboarding' is true, and user is not authenticated)
+ - SplashScreen -> NavigationScreen (if 'completed_onboarding' is true, and user is authenticated)
+ - OnboardingScreen -> LoginScreen (on 'Get Started' tap)
+ - LoginScreen -> NavigationScreen (on successful sign in / sign up)
+ - NavigationScreen -> Contains BottomNavigationBar with the following tabs:
+   * Tab 0: DashboardScreen
+   * Tab 1: HabitsScreen
+   * Tab 2: StudyScreen
+   * Tab 3: AcademicsScreen
+   * Tab 4: ExpensesScreen
+ - NavigationScreen Drawer or Profile Screen triggers: ProfileScreen
+ - ProfileScreen -> SUSEvaluationScreen / SusScreen (triggers the usability test survey)

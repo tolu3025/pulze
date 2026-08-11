@@ -1,0 +1,25 @@
+=== NAVIGATION SCHEME (FACTUAL RECOVERY) ===
+Routing Engine:
+ - Implemented via Navigator pushing MaterialPageRoute instances. No dynamic named routes configuration found.
+
+Flow Sequence:
+ 1. SplashScreen -> reads SharedPreferences completed_onboarding
+    - If false: Navigator.pushReplacement -> OnboardingScreen
+    - If true: check FirebaseAuth user session
+      - If authenticated: Navigator.pushReplacement -> NavigationScreen
+      - If unauthenticated: Navigator.pushReplacement -> LoginScreen
+
+ 2. OnboardingScreen -> Get Started click
+    - Navigator.pushReplacement -> LoginScreen
+
+ 3. LoginScreen -> successful login / signup
+    - Navigator.pushReplacement -> NavigationScreen
+
+ 4. NavigationScreen -> Shell tabs:
+    - Index 0: DashboardScreen
+    - Index 1: HabitsScreen
+    - Index 2: StudyScreen
+    - Index 3: AcademicsScreen
+    - Index 4: ExpensesScreen
+
+ 5. NavigationScreen -> ProfileScreen -> SusScreen (Survey popup)

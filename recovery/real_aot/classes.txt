@@ -1,0 +1,33 @@
+=== CLASSES (FACTUAL RECOVERY) ===
+Application Core:
+ - PulzeApp
+ - AppTheme
+
+Screens:
+ - SplashScreen, _SplashScreenState
+ - OnboardingScreen, _OnboardingScreenState
+ - LoginScreen, _LoginScreenState
+ - NavigationScreen, _NavigationScreenState
+ - DashboardScreen
+ - AcademicsScreen, _AcademicsScreenState, __AcademicsScreenState
+ - HabitsScreen, _HabitsScreenState, __HabitsScreenState
+ - StudyScreen, _StudyScreenState, __StudyScreenState
+ - ExpensesScreen, _ExpensesScreenState, __ExpensesScreenState
+ - SUSEvaluationScreen (represented by SusScreen, _SusScreenState)
+ - ProfileScreen, _ProfileScreenState
+
+Data Models:
+ - AcademicRecordModel
+ - ExpenseModel
+ - HabitModel
+ - StudySessionModel
+ - CalendarTask
+ - UserProfile
+
+State Providers & Services:
+ - AuthProvider
+ - AcademicProvider
+ - ExpenseProvider
+ - HabitProvider
+ - StudyProvider
+ - FirebaseService

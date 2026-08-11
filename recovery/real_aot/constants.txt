@@ -1,0 +1,22 @@
+=== CONSTANTS & LITERAL STRINGS (FACTUAL RECOVERY) ===
+Color Hex Tokens:
+ - 0xFF6B4EFF (Primary Violet)
+ - 0xFFFCF8FF (Splash background tint)
+ - 0xFFF9F8F6 (Dashboard background tint)
+ - 0xFFEBE8E1 (Light grey borders/dividers)
+ - 0xFF787587 (Secondary muted text tint)
+ - 0xFF1C1A24 (Dark text color)
+ - 0xFF00BFA5 (Teal accent color)
+
+Text Strings:
+ - Onboarding Description 1: "Your personal academic companion. Find your rhythm, track your growth, and manage your student life effectively."
+ - Onboarding Description 2: "Calculate your weighted CGPA, log focus sessions using the Pomodoro timer, and build study momentum."
+ - Onboarding Description 3: "Build consistency with daily habit streaks and keep your expenses under control with our intuitive tracker."
+ - Onboarding Description 4: "Study hard, track your budget, build consistency, and take care of your mind."
+ - Onboarding Header 1: "Welcome to Pulze"
+ - Onboarding Header 2: "Excel Academically"
+ - Onboarding Header 3: "Track Habits & Finances"
+ - Onboarding Header 4: "Balance is key."
+ - Dashboard Motto: "Manage your pocket money wisely. A wealthy student is a disciplined student."
+ - Timer States: "RUNNING", "PAUSED"
+ - Delete sessions alert: "Are you sure you want to delete this study session for \""

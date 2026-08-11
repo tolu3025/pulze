@@ -3,9 +3,47 @@ import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import '../providers/expense_provider.dart';
+import '../models/expense_model.dart';
 
-class ExpensesScreen extends StatelessWidget {
+class ExpensesScreen extends StatefulWidget {
   const ExpensesScreen({super.key});
+
+  @override
+  State<ExpensesScreen> createState() => _ExpensesScreenState();
+}
+
+class _ExpensesScreenState extends State<ExpensesScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  String _selectedMonthFilter = 'This Month';
+  String _selectedCategoryFilter = 'All';
+
+  List<String> get _monthFilters {
+    final now = DateTime.now();
+    final List<String> filters = ['This Month', 'Last Month'];
+    final List<String> months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    filters.addAll(months);
+    filters.add('${now.year}');
+    filters.add('${now.year - 1}');
+    filters.add('${now.year - 2}');
+    filters.add('All Time');
+    return filters;
+  }
+  final List<String> _categoryFilters = ['All', 'Food', 'Transport', 'Books', 'Entertainment', 'Bills', 'Other'];
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   void _showExpenseFormBottomSheet(BuildContext context) {
     final titleController = TextEditingController();
@@ -103,22 +141,48 @@ class ExpensesScreen extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () {
-                      final title = titleController.text.trim();
-                      final amt = double.tryParse(amountController.text) ?? 0.0;
-                      if (title.isNotEmpty && amt > 0) {
-                        Provider.of<ExpenseProvider>(context, listen: false)
-                            .addExpense(title, selectedCategory, amt, DateTime.now());
-                        Navigator.pop(context);
-                      }
+                  Builder(
+                    builder: (context) {
+                      bool isSaving = false;
+                      return StatefulBuilder(
+                        builder: (context, setState) {
+                          return ElevatedButton(
+                            onPressed: isSaving ? null : () async {
+                              final title = titleController.text.trim();
+                              final amt = double.tryParse(amountController.text) ?? 0.0;
+                              if (title.isNotEmpty && amt > 0) {
+                                setState(() => isSaving = true);
+                                try {
+                                  await Provider.of<ExpenseProvider>(context, listen: false)
+                                      .addExpense(title, selectedCategory, amt, DateTime.now());
+                                  if (context.mounted) Navigator.pop(context);
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Failed to add expense: Permission Denied or Network Error.')),
+                                    );
+                                  }
+                                } finally {
+                                  setState(() => isSaving = false);
+                                }
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF6B4EFF),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                            child: isSaving
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                  )
+                                : const Text('Add Expense', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                          );
+                        },
+                      );
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6B4EFF),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                    child: const Text('Add Expense', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
                   const SizedBox(height: 24),
                 ],
@@ -130,10 +194,45 @@ class ExpensesScreen extends StatelessWidget {
     );
   }
 
+  List<Expense> _getFilteredExpenses(List<Expense> expenses) {
+    final now = DateTime.now();
+    final List<String> months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return expenses.where((e) {
+      bool monthMatch = true;
+      if (_selectedMonthFilter == 'This Month') {
+        monthMatch = e.date.year == now.year && e.date.month == now.month;
+      } else if (_selectedMonthFilter == 'Last Month') {
+        int year = now.year;
+        int month = now.month - 1;
+        if (month == 0) {
+          month = 12;
+          year -= 1;
+        }
+        monthMatch = e.date.year == year && e.date.month == month;
+      } else if (months.contains(_selectedMonthFilter)) {
+        final monthIndex = months.indexOf(_selectedMonthFilter) + 1;
+        monthMatch = e.date.year == now.year && e.date.month == monthIndex;
+      } else if (int.tryParse(_selectedMonthFilter) != null) {
+        final year = int.parse(_selectedMonthFilter);
+        monthMatch = e.date.year == year;
+      }
+      
+      bool catMatch = true;
+      if (_selectedCategoryFilter != 'All') {
+        catMatch = e.category == _selectedCategoryFilter;
+      }
+      return monthMatch && catMatch;
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final expense = Provider.of<ExpenseProvider>(context);
-    final categoryTotals = expense.getCategoryTotals();
+    final expenseProvider = Provider.of<ExpenseProvider>(context);
+    final categoryTotals = expenseProvider.getCategoryTotals();
+    final filteredExpenses = _getFilteredExpenses(expenseProvider.expenses);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9F8F6),
@@ -146,181 +245,233 @@ class ExpensesScreen extends StatelessWidget {
             onPressed: () => _showExpenseFormBottomSheet(context),
           ),
         ],
+        bottom: TabBar(
+          controller: _tabController,
+          labelColor: const Color(0xFF6B4EFF),
+          unselectedLabelColor: const Color(0xFF787587),
+          indicatorColor: const Color(0xFF6B4EFF),
+          tabs: const [
+            Tab(text: 'History'),
+            Tab(text: 'Charts'),
+          ],
+        ),
       ),
-      body: Column(
+      body: TabBarView(
+        controller: _tabController,
         children: [
-          // Total Spent Banner
-          Container(
-            padding: const EdgeInsets.all(20.0),
-            margin: const EdgeInsets.all(20.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFEBE8E1)),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Total Expenditure',
-                        style: TextStyle(color: Color(0xFF787587), fontSize: 13, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '₦${expense.totalExpenses.toStringAsFixed(2)}',
-                        style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF1C1A24)),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF00BFA5).withOpacity(0.15),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.account_balance_wallet_rounded, size: 28, color: Color(0xFF00BFA5)),
-                ),
-              ],
-            ),
-          ),
-
-          // Visual breakdown via fl_chart
-          if (expense.expenses.isNotEmpty)
-            SizedBox(
-              height: 140,
-              child: Row(
-                children: [
-                  const SizedBox(width: 24),
-                  Expanded(
-                    flex: 2,
-                    child: PieChart(
-                      PieChartData(
-                        sectionsSpace: 4,
-                        centerSpaceRadius: 35,
-                        sections: _buildPieSections(categoryTotals),
+          // History Tab
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        value: _selectedMonthFilter,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        items: _monthFilters.map((val) => DropdownMenuItem(value: val, child: Text(val, style: const TextStyle(fontSize: 14)))).toList(),
+                        onChanged: (val) {
+                          if (val != null) setState(() => _selectedMonthFilter = val);
+                        },
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 24),
-                  Expanded(
-                    flex: 3,
-                    child: SingleChildScrollView(
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        value: _selectedCategoryFilter,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        items: _categoryFilters.map((val) => DropdownMenuItem(value: val, child: Text(val, style: const TextStyle(fontSize: 14)))).toList(),
+                        onChanged: (val) {
+                          if (val != null) setState(() => _selectedCategoryFilter = val);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: expenseProvider.isLoading
+                    ? const Center(child: CircularProgressIndicator(color: Color(0xFF6B4EFF)))
+                    : filteredExpenses.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'No expenses found for this filter.',
+                              style: TextStyle(color: Color(0xFF787587), fontSize: 16),
+                              textAlign: TextAlign.center,
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: filteredExpenses.length,
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            itemBuilder: (context, index) {
+                              final item = filteredExpenses[index];
+                              return Container(
+                                margin: const EdgeInsets.only(bottom: 12),
+                                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(color: const Color(0xFFEBE8E1)),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: _getCategoryColor(item.category).withOpacity(0.15),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        _getCategoryIcon(item.category),
+                                        color: _getCategoryColor(item.category),
+                                        size: 20,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            item.title,
+                                            style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1C1A24), fontSize: 14),
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            '${item.category} | ${DateFormat('MMM d, y').format(item.date)}',
+                                            style: const TextStyle(color: Color(0xFF787587), fontSize: 12),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      '-₦${item.amount.toStringAsFixed(2)}',
+                                      style: const TextStyle(
+                                        color: Color(0xFFBA1A1A),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete_outline, size: 18, color: Color(0xFF787587)),
+                                      onPressed: () {
+                                        expenseProvider.deleteExpense(item.id);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+              ),
+            ],
+          ),
+          
+          // Charts Tab
+          Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20.0),
+                margin: const EdgeInsets.all(20.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFEBE8E1)),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: categoryTotals.keys.map((cat) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 10,
-                                  height: 10,
-                                  decoration: BoxDecoration(
-                                    color: _getCategoryColor(cat),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    '$cat: ₦${categoryTotals[cat]!.toStringAsFixed(0)}',
-                                    style: const TextStyle(fontSize: 12, color: Color(0xFF1C1A24)),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
+                        children: [
+                          const Text(
+                            'Total Expenditure',
+                            style: TextStyle(color: Color(0xFF787587), fontSize: 13, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '₦${expenseProvider.totalExpenses.toStringAsFixed(2)}',
+                            style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF1C1A24)),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 24),
-                ],
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF00BFA5).withOpacity(0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.account_balance_wallet_rounded, size: 28, color: Color(0xFF00BFA5)),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          const SizedBox(height: 20),
-
-          // Transaction list
-          Expanded(
-            child: expense.isLoading
-                ? const Center(child: CircularProgressIndicator(color: Color(0xFF6B4EFF)))
-                : expense.expenses.isEmpty
-                    ? const Center(
-                        child: Text(
-                          'No expenses tracked yet.\nTap "+" in the top right to start.',
-                          style: TextStyle(color: Color(0xFF787587), fontSize: 16),
-                          textAlign: TextAlign.center,
-                        ),
-                      )
-                    : ListView.builder(
-                        itemCount: expense.expenses.length,
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        itemBuilder: (context, index) {
-                          final item = expense.expenses[index];
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 12),
-                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: const Color(0xFFEBE8E1)),
+              if (expenseProvider.expenses.isNotEmpty)
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 200,
+                          child: PieChart(
+                            PieChartData(
+                              sectionsSpace: 4,
+                              centerSpaceRadius: 50,
+                              sections: _buildPieSections(categoryTotals),
                             ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: _getCategoryColor(item.category).withOpacity(0.15),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    _getCategoryIcon(item.category),
-                                    color: _getCategoryColor(item.category),
-                                    size: 20,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: categoryTotals.keys.map((cat) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Row(
                                     children: [
-                                      Text(
-                                        item.title,
-                                        style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1C1A24), fontSize: 14),
+                                      Container(
+                                        width: 16,
+                                        height: 16,
+                                        decoration: BoxDecoration(
+                                          color: _getCategoryColor(cat),
+                                          shape: BoxShape.circle,
+                                        ),
                                       ),
-                                      const SizedBox(height: 2),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          cat,
+                                          style: const TextStyle(fontSize: 16, color: Color(0xFF1C1A24), fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
                                       Text(
-                                        '${item.category} | ${DateFormat('MMM d, y').format(item.date)}',
-                                        style: const TextStyle(color: Color(0xFF787587), fontSize: 12),
+                                        '₦${categoryTotals[cat]!.toStringAsFixed(0)}',
+                                        style: const TextStyle(fontSize: 16, color: Color(0xFF1C1A24)),
                                       ),
                                     ],
                                   ),
-                                ),
-                                Text(
-                                  '-₦${item.amount.toStringAsFixed(2)}',
-                                  style: const TextStyle(
-                                    color: Color(0xFFBA1A1A),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                IconButton(
-                                  icon: const Icon(Icons.delete_outline, size: 18, color: Color(0xFF787587)),
-                                  onPressed: () {
-                                    expense.deleteExpense(item.id);
-                                  },
-                                ),
-                              ],
+                                );
+                              }).toList(),
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
           ),
         ],
       ),
@@ -334,7 +485,7 @@ class ExpensesScreen extends StatelessWidget {
         color: _getCategoryColor(cat),
         value: value,
         title: '',
-        radius: 18,
+        radius: 20,
       );
     }).toList();
   }
@@ -342,17 +493,17 @@ class ExpensesScreen extends StatelessWidget {
   Color _getCategoryColor(String cat) {
     switch (cat) {
       case 'Food':
-        return const Color(0xFFEF4444); // Red
+        return const Color(0xFFEF4444);
       case 'Transport':
-        return const Color(0xFF3B82F6); // Blue
+        return const Color(0xFF3B82F6);
       case 'Books':
-        return const Color(0xFFF59E0B); // Amber
+        return const Color(0xFFF59E0B);
       case 'Entertainment':
-        return const Color(0xFF8B5CF6); // Purple
+        return const Color(0xFF8B5CF6);
       case 'Bills':
-        return const Color(0xFF10B981); // Emerald
+        return const Color(0xFF10B981);
       default:
-        return const Color(0xFF6B7280); // Gray
+        return const Color(0xFF6B7280);
     }
   }
 

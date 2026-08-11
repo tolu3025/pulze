@@ -1,0 +1,40 @@
+=== FUNCTIONS & METHODS (FACTUAL RECOVERY) ===
+Lifecycle & Initialization:
+ - main()
+ - initState()
+ - dispose()
+ - build(BuildContext)
+
+Authentication Methods (AuthProvider):
+ - signInWithEmailAndPassword(String, String)
+ - createUserWithEmailAndPassword(String, String)
+ - sendPasswordResetEmail(String)
+ - signOut()
+ - _loadUserData()
+
+Database Action Methods:
+ - addHabit(String, String)
+ - deleteHabit(String)
+ - toggleHabitCompletion(String, DateTime)
+ - addTask(String, DateTime)
+ - deleteTask(String)
+ - toggleTaskCompletion(String, bool)
+ - addExpense(String, double, DateTime)
+ - deleteExpense(String)
+ - updateExpense(String, String, double, DateTime)
+ - addStudySession(String, int, DateTime)
+ - deleteStudySession(String)
+ - updateStudySession(String, String, int, DateTime)
+ - _submitSurvey()
+
+Internal Formatting & Local UI Helpers:
+ - _routeNext()
+ - _finishOnboarding()
+ - _showEditDurationDialog(BuildContext, StudyProvider)
+ - _formatSeconds(int)
+ - _showHabitFormBottomSheet(BuildContext)
+ - _showDayTasksBottomSheet(BuildContext, DateTime)
+ - _showExpenseFormBottomSheet(BuildContext)
+ - _recalculateExpensesLocally()
+ - _recalculateStudyHoursLocally()
+ - calculateStreak(List<DateTime>)
