@@ -584,7 +584,7 @@ class _GoalsScreenState extends State<GoalsScreen> with SingleTickerProviderStat
           margin: const EdgeInsets.only(bottom: 16.0),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFEBE8E1)),
+            side: const BorderSide(color: Color(0xFFEBE8E1)),
           ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
