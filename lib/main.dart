@@ -9,8 +9,8 @@ import 'providers/academic_provider.dart';
 import 'providers/expense_provider.dart';
 import 'providers/habit_provider.dart';
 import 'providers/study_provider.dart';
+import 'providers/goal_provider.dart';
 import 'screens/splash_screen.dart';
-
 import 'services/notification_service.dart';
 
 void main() async {
@@ -33,6 +33,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ExpenseProvider()),
         ChangeNotifierProvider(create: (_) => HabitProvider()),
         ChangeNotifierProvider(create: (_) => StudyProvider()),
+        ChangeNotifierProvider(create: (_) => GoalProvider()),
       ],
       child: const PulzeApp(),
     ),

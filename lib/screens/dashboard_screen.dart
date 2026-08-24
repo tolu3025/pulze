@@ -7,7 +7,11 @@ import '../providers/expense_provider.dart';
 import '../providers/habit_provider.dart';
 import '../providers/study_provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/goal_provider.dart';
+import '../models/models.dart';
 import '../services/notification_service.dart';
+import 'goals_screen.dart';
+
 
 class DashboardScreen extends StatelessWidget {
   static bool _motivationNotifiedToday = false;
@@ -21,6 +25,7 @@ class DashboardScreen extends StatelessWidget {
     final habit = Provider.of<HabitProvider>(context);
     final study = Provider.of<StudyProvider>(context);
     final auth = Provider.of<AuthProvider>(context);
+    final goalProvider = Provider.of<GoalProvider>(context);
 
     // Calculate completed habits today
     final now = DateTime.now();
@@ -406,6 +411,191 @@ class DashboardScreen extends StatelessWidget {
                   color: const Color(0xFF00BFA5),
                 ),
               ],
+            ),
+            // Goals & Milestones Block
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'GOALS & PROGRESS',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.8,
+                    color: const Color(0xFF1C1A24).withOpacity(0.6),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const GoalsScreen()),
+                    );
+                  },
+                  child: const Row(
+                    children: [
+                      Text('Manage', style: TextStyle(color: Color(0xFF6B4EFF), fontWeight: FontWeight.bold, fontSize: 13)),
+                      Icon(Icons.chevron_right, color: Color(0xFF6B4EFF), size: 16),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Builder(
+              builder: (context) {
+                // Compute progress for active goals
+                final List<Map<String, dynamic>> calculatedGoals = goalProvider.goals.map((g) {
+                  final double progressVal = goalProvider.calculateProgressValue(
+                    g,
+                    sessions: study.sessions,
+                    habits: habit.habits,
+                    expenses: expense.expenses,
+                    cgpa: academic.cgpa,
+                    totalCredits: academic.semesters.fold<double>(0.0, (sum, sem) => sum + sem.totalCreditUnits),
+                  );
+                  return {
+                    'goal': g,
+                    'value': progressVal,
+                  };
+                }).toList();
+
+                final activeGoals = calculatedGoals.where((item) => !(item['goal'] as Goal).isAchieved).toList();
+
+                if (activeGoals.isEmpty) {
+                  return Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFEBE8E1)),
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(Icons.emoji_flags_outlined, color: const Color(0xFF6B4EFF).withOpacity(0.4), size: 36),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'No active goals',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF1C1A24)),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          'Set a goal to keep track of your focus, habits, and budgets.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 12, color: Color(0xFF787587)),
+                        ),
+                        const SizedBox(height: 12),
+                        OutlinedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const GoalsScreen()),
+                            );
+                          },
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Color(0xFF6B4EFF)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                          child: const Text('Add a Goal', style: TextStyle(color: Color(0xFF6B4EFF), fontWeight: FontWeight.bold)),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                // Render at most 3 active goals
+                final displayGoals = activeGoals.take(3).toList();
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: displayGoals.length,
+                  itemBuilder: (context, index) {
+                    final item = displayGoals[index];
+                    final goal = item['goal'] as Goal;
+                    final double val = item['value'] as double;
+                    
+                    double percent = 0.0;
+                    if (goal.targetValue > 0) {
+                      percent = val / goal.targetValue;
+                      if (percent > 1.0) percent = 1.0;
+                      if (percent < 0.0) percent = 0.0;
+                    }
+
+                    Color progressColor = const Color(0xFF6B4EFF);
+                    IconData goalIcon = Icons.flag_outlined;
+
+                    if (goal.type == 'study') {
+                      progressColor = const Color(0xFF6B4EFF);
+                      goalIcon = Icons.timer_outlined;
+                    } else if (goal.type == 'habit') {
+                      progressColor = const Color(0xFF00BFA5);
+                      goalIcon = Icons.check_circle_outline_rounded;
+                    } else if (goal.type == 'academic') {
+                      progressColor = const Color(0xFFE07A5F);
+                      goalIcon = Icons.school_outlined;
+                    } else if (goal.type == 'expense') {
+                      progressColor = const Color(0xFF00BFA5);
+                      goalIcon = Icons.account_balance_wallet_outlined;
+                    }
+
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFFEBE8E1)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(goalIcon, color: progressColor, size: 18),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    goal.title,
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1C1A24)),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                '${(percent * 100).toStringAsFixed(0)}%',
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: progressColor),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: LinearProgressIndicator(
+                              value: percent,
+                              color: progressColor,
+                              backgroundColor: const Color(0xFFEBE8E1),
+                              minHeight: 6,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            goal.type == 'expense'
+                                ? '₦${val.toStringAsFixed(0)} of ₦${goal.targetValue.toStringAsFixed(0)} limit'
+                                : goal.attachedActivityId == 'gpa'
+                                    ? 'GPA: ${val.toStringAsFixed(2)} / ${goal.targetValue.toStringAsFixed(2)}'
+                                    : 'Progress: ${val.toStringAsFixed(1)} / ${goal.targetValue.toStringAsFixed(1)}',
+                            style: const TextStyle(fontSize: 10, color: Color(0xFF787587)),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
             ),
             const SizedBox(height: 20),
 

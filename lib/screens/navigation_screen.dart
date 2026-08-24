@@ -4,6 +4,7 @@ import '../providers/academic_provider.dart';
 import '../providers/expense_provider.dart';
 import '../providers/habit_provider.dart';
 import '../providers/study_provider.dart';
+import '../providers/goal_provider.dart';
 
 import 'dashboard_screen.dart';
 import 'academics_screen.dart';
@@ -36,10 +37,34 @@ class _NavigationScreenState extends State<NavigationScreen> {
     super.initState();
     // Initialize Firestore data streaming listeners
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<AcademicProvider>(context, listen: false).initListener();
-      Provider.of<ExpenseProvider>(context, listen: false).initListener();
-      Provider.of<HabitProvider>(context, listen: false).initListener();
-      Provider.of<StudyProvider>(context, listen: false).initListener();
+      final academic = Provider.of<AcademicProvider>(context, listen: false);
+      final expense = Provider.of<ExpenseProvider>(context, listen: false);
+      final habit = Provider.of<HabitProvider>(context, listen: false);
+      final study = Provider.of<StudyProvider>(context, listen: false);
+      final goal = Provider.of<GoalProvider>(context, listen: false);
+
+      academic.initListener();
+      expense.initListener();
+      habit.initListener();
+      study.initListener();
+      goal.initListener();
+
+      void runCheck() {
+        if (!mounted) return;
+        goal.checkProgressAndAlerts(
+          sessions: study.sessions,
+          habits: habit.habits,
+          expenses: expense.expenses,
+          cgpa: academic.cgpa,
+          totalCredits: academic.semesters.fold<double>(0.0, (sum, sem) => sum + sem.totalCreditUnits),
+        );
+      }
+
+      study.addListener(runCheck);
+      habit.addListener(runCheck);
+      expense.addListener(runCheck);
+      academic.addListener(runCheck);
+      goal.addListener(runCheck);
     });
   }
 
