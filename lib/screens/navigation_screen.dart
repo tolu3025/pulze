@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 import '../providers/academic_provider.dart';
 import '../providers/expense_provider.dart';
 import '../providers/habit_provider.dart';
 import '../providers/study_provider.dart';
 import '../providers/goal_provider.dart';
+import '../services/notification_service.dart';
 
 import 'dashboard_screen.dart';
 import 'academics_screen.dart';
@@ -49,6 +52,25 @@ class _NavigationScreenState extends State<NavigationScreen> {
       study.initListener();
       goal.initListener();
 
+      Future<void> checkDailyGoalsReminder() async {
+        if (!mounted) return;
+        final prefs = await SharedPreferences.getInstance();
+        final lastReminderStr = prefs.getString('last_goals_reminder_date');
+        final todayStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+        if (lastReminderStr != todayStr) {
+          final activeGoalsCount = goal.goals.where((g) => !g.isAchieved).length;
+          if (activeGoalsCount > 0) {
+            await NotificationService().showNotification(
+              id: 9999,
+              title: 'Daily Goals Reminder 🎯',
+              body: 'You have $activeGoalsCount active goals waiting for you today. Keep pushing to reach your targets!',
+            );
+            await prefs.setString('last_goals_reminder_date', todayStr);
+          }
+        }
+      }
+
       void runCheck() {
         if (!mounted) return;
         goal.checkProgressAndAlerts(
@@ -58,6 +80,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
           cgpa: academic.cgpa,
           totalCredits: academic.semesters.fold<double>(0.0, (sum, sem) => sum + sem.totalCreditUnits),
         );
+        checkDailyGoalsReminder();
       }
 
       study.addListener(runCheck);

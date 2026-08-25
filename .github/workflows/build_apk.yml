@@ -6,6 +6,9 @@ on:
       - master
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build release APK
@@ -36,3 +39,14 @@ jobs:
         with:
           name: release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Release APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest APK Build
+          draft: false
+          prerelease: true
+          files: build/app/outputs/flutter-apk/app-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
