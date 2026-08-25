@@ -21,25 +21,35 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _routeNext() async {
-    // Wait briefly for smooth visual transition
-    await Future.delayed(const Duration(seconds: 2));
-    if (!mounted) return;
+    try {
+      // Wait briefly for smooth visual transition
+      await Future.delayed(const Duration(seconds: 2));
+      if (!mounted) return;
 
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final prefs = await SharedPreferences.getInstance();
-    
-    final bool hasCompletedOnboarding = prefs.getBool('completed_onboarding') ?? false;
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final prefs = await SharedPreferences.getInstance();
+      
+      final bool hasCompletedOnboarding = prefs.getBool('completed_onboarding') ?? false;
 
-    if (!hasCompletedOnboarding) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-      );
-    } else {
-      if (authProvider.isAuthenticated) {
+      if (!hasCompletedOnboarding) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const NavigationScreen()),
+          MaterialPageRoute(builder: (_) => const OnboardingScreen()),
         );
       } else {
+        if (authProvider.isAuthenticated) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const NavigationScreen()),
+          );
+        } else {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const LoginScreen()),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('Error routing next on splash screen: $e');
+      if (mounted) {
+        // Fallback to LoginScreen to prevent being stuck forever
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const LoginScreen()),
         );

@@ -20,7 +20,10 @@ void main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    await NotificationService().init();
+    // Initialize notifications in the background to avoid blocking the first frame render
+    NotificationService().init().catchError((e) {
+      debugPrint('Notification initialization warning: $e');
+    });
   } catch (e) {
     debugPrint('Initialization warning: $e');
   }

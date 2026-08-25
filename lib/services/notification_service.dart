@@ -30,8 +30,13 @@ class NotificationService {
       debugPrint('User granted permission');
       
       // Get the token each time the application loads
-      String? token = await messaging.getToken();
-      debugPrint('FCM Token: $token');
+      String? token;
+      try {
+        token = await messaging.getToken().timeout(const Duration(seconds: 4));
+        debugPrint('FCM Token: $token');
+      } catch (e) {
+        debugPrint('FCM Token retrieval failed or timed out: $e');
+      }
 
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         debugPrint('Got a message whilst in the foreground!');
