@@ -25,7 +25,8 @@ class AuthProvider extends ChangeNotifier {
   Future<void> signInWithEmailAndPassword(String email, String password) async {
     _setLoading(true);
     try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      await _auth.signInWithEmailAndPassword(email: email, password: password)
+          .timeout(const Duration(seconds: 10));
     } finally {
       _setLoading(false);
     }
@@ -34,11 +35,14 @@ class AuthProvider extends ChangeNotifier {
   Future<void> createUserWithEmailAndPassword(String email, String password, String firstName, String lastName) async {
     _setLoading(true);
     try {
-      final userCredential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      final userCredential = await _auth.createUserWithEmailAndPassword(email: email, password: password)
+          .timeout(const Duration(seconds: 10));
       final displayName = '$firstName $lastName'.trim();
       if (displayName.isNotEmpty) {
-        await userCredential.user?.updateDisplayName(displayName);
-        await userCredential.user?.reload();
+        await userCredential.user?.updateDisplayName(displayName)
+            .timeout(const Duration(seconds: 5));
+        await userCredential.user?.reload()
+            .timeout(const Duration(seconds: 5));
         _user = _auth.currentUser;
       }
     } finally {
@@ -50,8 +54,10 @@ class AuthProvider extends ChangeNotifier {
     _setLoading(true);
     try {
       final displayName = '$firstName $lastName'.trim();
-      await _user?.updateDisplayName(displayName);
-      await _user?.reload();
+      await _user?.updateDisplayName(displayName)
+          .timeout(const Duration(seconds: 5));
+      await _user?.reload()
+          .timeout(const Duration(seconds: 5));
       _user = _auth.currentUser;
       notifyListeners();
     } finally {
@@ -62,7 +68,8 @@ class AuthProvider extends ChangeNotifier {
   Future<void> sendPasswordResetEmail(String email) async {
     _setLoading(true);
     try {
-      await _auth.sendPasswordResetEmail(email: email);
+      await _auth.sendPasswordResetEmail(email: email)
+          .timeout(const Duration(seconds: 10));
     } finally {
       _setLoading(false);
     }
@@ -71,7 +78,8 @@ class AuthProvider extends ChangeNotifier {
   Future<void> signOut() async {
     _setLoading(true);
     try {
-      await _auth.signOut();
+      await _auth.signOut()
+          .timeout(const Duration(seconds: 5));
     } finally {
       _setLoading(false);
     }
@@ -80,8 +88,10 @@ class AuthProvider extends ChangeNotifier {
   Future<void> updateProfilePhoto(String photoUrl) async {
     _setLoading(true);
     try {
-      await _user?.updatePhotoURL(photoUrl);
-      await _user?.reload();
+      await _user?.updatePhotoURL(photoUrl)
+          .timeout(const Duration(seconds: 5));
+      await _user?.reload()
+          .timeout(const Duration(seconds: 5));
       _user = _auth.currentUser;
       notifyListeners();
     } finally {
